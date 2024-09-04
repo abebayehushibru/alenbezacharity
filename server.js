@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:3000', // Replace with your frontend URL
+    origin: 'https://alenbezacharity.netlify.app', // Replace with your frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // Allows sending cookies or authorization headers
   }));
