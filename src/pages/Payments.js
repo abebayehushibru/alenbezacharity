@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Buttons from "../components/Buttons";
 import { DataGrid } from "@mui/x-data-grid";
 import TransactionCard from "../components/Cards/TransactionCard";
 import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const DataTable = () => {
+
   const columns = [
     {
       field: "id",
@@ -58,6 +60,8 @@ const DataTable = () => {
     { id: 11, month: "July", status: "Pending" },
     { id: 12, month: "August", status: "Pending" },
   ];
+ 
+  
   return (
     <div
       style={{ height: "400px", width: "100%" }}
@@ -85,6 +89,10 @@ const DataTable = () => {
 
 const Payments = () => {
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(0);
+  const {user}=useAuth();
+  useEffect(() => {
+    window.location.href="/"
+   }, [user.token])
   return (
     <div className="  max-w-full px-0 sm:px-16 sm:py-5 gap-10">
   

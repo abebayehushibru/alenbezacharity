@@ -173,7 +173,7 @@ const Greeting = ({ user }) => {
                   >
                     Edit Profile
                   </li>
-                  {user?.role=="member"&& <li
+                  {user?.role==="admin" && user?.id==="ABC/0013/24"&& <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={handleLogout}
                   >
@@ -279,6 +279,13 @@ const Greeting = ({ user }) => {
                   >
                     Edit Profile
                   </li>
+                  {user?.role==="admin" && user?.id==="ABC/0013/24"&& <li
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <Link to="/admin"> Switch to admin</Link>
+                   
+                  </li>}
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={handleLogout}
