@@ -6,13 +6,14 @@ import userRoutes from './routes/userRoutes.js';
 import cors from 'cors';
 import giftRoutes from './routes/giftRoutes.js';
 import childRoutes from './routes/childRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 
 const app = express();
 
 app.use(cors({
-    origin: 'https://alenbezacharity.netlify.app', // Replace with your frontend URL
+    origin: 'https://alenbezacharity.netlify.app', //http://localhost:3000/ Replace with your frontend URL 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // Allows sending cookies or authorization headers
   }));
@@ -27,6 +28,8 @@ app.use('/users', userRoutes); // Use user routes for all user-related endpoints
 
 app.use('/gifts', giftRoutes);
 app.use('/child', childRoutes);
+app.use('/admin', adminRoutes);
+
 // Routes
 
 
