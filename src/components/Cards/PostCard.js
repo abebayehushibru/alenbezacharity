@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 const PostCard = ({ img, title, content, date ,id}) => {
   return (
     <div className='flex flex-col rounded-md mx-4 sm:mx-0 sm:max-w-[350px] min-w-[320px] overflow-hidden gap-2 shadow-2xl pb-3'>
-      <img src={img} alt='post_image' className='' />
+      <img src={img} alt='post_image' className='sm:h-[250px] object-cover w-full' />
       <div className='px-5 items-start flex flex-col gap-2'>
-        <h2 className='text-xl font-bold capitalize hover:text-[#F84D42] cursor-pointer'>
+        <h2 className='text-xl font-bold capitalize hover:text-[#eedbda] cursor-pointer'>
           {title}
         </h2>
         <p className='text-left text-[13px] text-black/80 line-clamp-2 overflow-hidden'>

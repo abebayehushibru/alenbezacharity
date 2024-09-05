@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const DataTable = () => {
-
   const columns = [
     {
       field: "id",
@@ -60,8 +59,7 @@ const DataTable = () => {
     { id: 11, month: "July", status: "Pending" },
     { id: 12, month: "August", status: "Pending" },
   ];
- 
-  
+
   return (
     <div
       style={{ height: "400px", width: "100%" }}
@@ -89,13 +87,14 @@ const DataTable = () => {
 
 const Payments = () => {
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(0);
-  const {user}=useAuth();
+  const { user } = useAuth();
   useEffect(() => {
-    window.location.href="/"
-   }, [user.token])
+    if (!user.token) {
+      window.location.href = "/";
+    }
+  }, [user?.token]);
   return (
     <div className="  max-w-full px-0 sm:px-16 sm:py-5 gap-10">
-  
       <div className=" flex flex-col sm:flex-row flex-wrap  p-0 sm:px-16 sm:py-16 sm:gap-16">
         <div className=" sm:w-1/2 flex flex-col ">
           <h2 className=" text-center px-5 py-3 bg-black/80 text-white  font-serif tracking-wider">
@@ -113,17 +112,15 @@ const Payments = () => {
           </div>
           <Link
             className={`relative text-[#F84D43]  text-center p-0  mt-4 w-full flex rounded-full pb-5 sm:pb-0 pt-4 `}
-           
-           to="/donate-now">
+            to="/donate-now"
+          >
             <span className=" flex justify-center items-center text-center h-[46px] w-[200px] hover:font-bold text-sm  hover:text-white hover:bg-[#F84D43] border-2 border-[#F84D43] rounded-full  transition-transform duration-100 ease-in-out">
               Donate Now
             </span>
-            <div  className="absolute left-0  text-white bg-[#F84D43] rounded-full p-2  m-0 ">
-              <FaPlus size={30}/>
+            <div className="absolute left-0  text-white bg-[#F84D43] rounded-full p-2  m-0 ">
+              <FaPlus size={30} />
             </div>
-            
           </Link>
-          
         </div>
         <div className=" flex flex-col flex-1 gap-5">
           <div className=" flex flex-row gap-2 items-center">
@@ -133,9 +130,16 @@ const Payments = () => {
             </h2>
           </div>
           <div className=" flex flex-col space-y-3">
-            <TransactionCard  name={"Abebayehu Shibru"} type={"Gift for Child"} amount={300}/>
-            <TransactionCard  name={"Abebayehu Shibru"} type={"Monthly donation"} amount={400}/>
-         
+            <TransactionCard
+              name={`${user?.firstname} ${user?.firstname}`}
+              type={"Gift for Child"}
+              amount={300}
+            />
+            <TransactionCard
+               name={`${user?.firstname} ${user?.firstname}`}
+              type={"Monthly donation"}
+              amount={400}
+            />
           </div>
         </div>
       </div>

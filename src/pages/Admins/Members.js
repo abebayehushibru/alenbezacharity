@@ -21,6 +21,7 @@ const Members = ({ params }) => {
         setData(data);
         setLoading(false);
     }).catch((e)=>{
+      setLoading(false);
 console.log(e);
 
     });

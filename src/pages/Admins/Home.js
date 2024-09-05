@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { AiOutlineDashboard, AiOutlineUser, AiOutlineGift, AiOutlineEdit } from 'react-icons/ai'; // Example icons
 import { BiChevronDown, BiLogOut } from 'react-icons/bi'; // Icon for dropdown and logout
-import Dashboard from './Dashbord';
+
 import avatar from "../../asserts/images/avatar.png";
+import logo from "../../asserts/images/Abc.PNG";
 import { TiArrowSyncOutline } from "react-icons/ti";
 import { FaChild } from 'react-icons/fa6';
 import { useAuth } from '../../context/AuthContext';
@@ -17,11 +18,11 @@ const {user}=useAuth
   return (
     <div className=" relative   w-full flex flex-col h-screen bg-gray-100">
       {/* Dashboard Navbar */}
-      <div className="flex justify-between items-center p-2 px-4 bg-white shadow-md">
+      <div className="flex justify-between items-center p-2 px-4 bg-white shadow-lg">
         <div className="flex items-center space-x-4">
           {/* Logo and Name */}
           <div className="text-lg font-bold"> <img
-              src="https://via.placeholder.com/Alenbeza_Charity"
+              src={logo}
               alt="Admin Avatar"
               className="w-10 h-10 rounded-full"
             /></div>
@@ -62,7 +63,7 @@ const {user}=useAuth
                 className="flex items-center p-2 rounded hover:bg-gray-700"
               >
                 <AiOutlineDashboard className="mr-2" />
-                Dashboard Landing
+                Dashboard
               </Link>
             </div>
 
@@ -169,9 +170,9 @@ const {user}=useAuth
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 p-1 ">
-            <div className=' max-h-full overflow-y-auto'>
-                 <Outlet />
+        <div className="relative flex-1  ">
+            <div className='absolute max-h-full overflow-y-auto min-w-full min-h-full bg-slate-300 grid grid-cols-1'>
+            <Outlet />
                  {/* <Dashboard/> */}
 
             </div>

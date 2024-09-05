@@ -98,6 +98,21 @@
  .MuiDataGrid-columnHeaderTitle {
   font-weight: bold !important;
  }
+ .MuiChartsLegend-root {
+  display: none !important;
+  width: 0;
+  
+}
+.css-1evyvmv-MuiChartsSurface-root {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column !important;
+}
+.pie .css-1evyvmv-MuiChartsSurface-rootg:first-child{
+  position: absolute !important;
+  left: 100% !important;
+}
 
 @keyframes spin {
   0% {

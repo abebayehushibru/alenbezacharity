@@ -126,7 +126,7 @@ const Greeting = ({ user }) => {
               About
             </Link>
             <Link
-              to="#contact"
+              to="/contact"
               className="text-[15px] text-[rgba(38,38,38,0.6)] hover:text-[#F96056] font-semibold px-3"
             >
               Contact
@@ -236,7 +236,7 @@ const Greeting = ({ user }) => {
             About
           </Link>
           <Link
-            to="/#contact"
+            to="/contact"
             className="text-[15px] text-[rgba(38,38,38,0.6)] hover:text-[#F96056] font-semibold py-2"
             onClick={toggleMobileMenu}
           >
