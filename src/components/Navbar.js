@@ -6,7 +6,7 @@ import { IoMenu, IoClose } from "react-icons/io5"; // Import Close icon
 import HoverIcon from "./HoverIcon";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
+import avatar from "../asserts/images/avatar.png";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth(); // Get user and logout from AuthContext
@@ -146,7 +146,7 @@ const Greeting = ({ user }) => {
         {user && (
           <div className="relative flex items-center md:ml-5" ref={dropdownRef}>
             <img
-              src={user.photo || img1} // Fallback to a default image if no photo
+              src={user.photo || avatar} // Fallback to a default image if no photo
               alt="User"
               className="h-[40px] w-[40px] rounded-full cursor-pointer"
               onClick={toggleDropdown}
@@ -252,7 +252,7 @@ const Greeting = ({ user }) => {
           {user && (
           <div className="relative flex items-center md:ml-5" ref={dropdownRef}>
             <img
-              src={user.photo || img1} // Fallback to a default image if no photo
+              src={user.photo || avatar} // Fallback to a default image if no photo
               alt="User"
               className="h-[40px] w-[40px] rounded-full cursor-pointer"
               onClick={toggleDropdown}

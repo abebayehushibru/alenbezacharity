@@ -77,10 +77,21 @@ const Footer = () => {
 
         </div>
       </div>
-      <div className="flex sm:flex-row flex-col gap-5  justify-between py-3 bg-black text-white/50 text-sm sm:px-16 px-4">
-        <span>Copyright &copy; Alenbeza Charity 2017. All Rights Reserved</span>
-        <span>Design & Developed by: Ahavah SWD & Technology</span>
-      </div>
+      <div className="flex sm:flex-row flex-col gap-5 justify-between py-3 bg-black text-white/50 text-sm sm:px-16 px-4">
+  <span>Copyright &copy; Alenbeza Charity 2017. All Rights Reserved</span>
+  <span>
+    Design & Developed by: 
+    <a
+      href="https://ahavahswd.netlify.app/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-white hover:underline"
+    >
+      Ahavah SWD & Technology
+    </a>
+  </span>
+</div>
+
     </div>
   );
 };
