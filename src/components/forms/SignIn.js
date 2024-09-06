@@ -139,7 +139,7 @@ const SignInForm = () => {
         <button
           type="submit"
           className="w-full bg-[#F84D43] text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
-          onClick={handleSignIn}
+          onClick={handleSubmit}
         >
           Sign In
         </button>
