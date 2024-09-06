@@ -55,11 +55,9 @@ const SignInForm = () => {
         hidePopup();
         setFormData({phone: '', password: ''})
      
-        hidePopup()
-        
+    
       } catch (error) {
-     //   setErrors({wrongPwdandPhone:error.data.message})
-     hidePopup()
+   showPopup("sign-in");
      if (error.response && error.response.data && error.response.data.message) {
       setErrors({wrongPwdandPhone:error.response.data.message})
       console.error('Error logging user:', error.response.data.message); // Display backend message
