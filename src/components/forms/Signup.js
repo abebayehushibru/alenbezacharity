@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
 
 const SignUpForm = () => {
-  const { showPopup } = usePopup();
+  const {showPopup,hidePopup}=usePopup()
   const { user ,login} = useAuth();
   useEffect(() => {
     if (user?.token) {
@@ -97,6 +97,7 @@ const SignUpForm = () => {
         createdate: new Date().toISOString(), // Optionally set to the current date
       };
       try {
+        showPopup("loading")
         const response = await axios.post(
           ABC_BACKEND_API_URL + "/users/register",
           dataToSend
@@ -113,8 +114,10 @@ const SignUpForm = () => {
           confirmPassword: "",
           agreePolicy: false,
         })
+        hidePopup()
        
       } catch (error) {
+        
         if (error.response && error.response.data && error.response.data.message) {
           setErrors({wrongonserver:error.response.data.message})
           console.error('Error logging user:', error.response.data.message); // Display backend message
@@ -122,7 +125,7 @@ const SignUpForm = () => {
           setErrors({wrongonserver:error.message})
           console.error('Unknown error:', error.message); // Fallback for unknown errors
         }
-        console.error("Error registering user:", error);
+        hidePopup()
       }
     }
   };
@@ -345,7 +348,7 @@ const SignUpForm = () => {
           <button
             type="button"
             className="text-blue-500 hover:underline ml-1"
-            onClick={() => showPopup("login")}
+            onClick={() => showPopup("sign-in")}
           >
             login
           </button>

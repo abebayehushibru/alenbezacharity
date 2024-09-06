@@ -10,8 +10,7 @@ const SignInForm = () => {
   const [errors, setErrors] = useState({});
   const [showForgotPrompt, setShowForgotPrompt] = useState(false);
   const [showForgotPopup, setShowForgotPopup] = useState(false);
- 
-  const {hidePopup}=usePopup()
+  const {showPopup,hidePopup}=usePopup()
  const {login}=useAuth()
   // Regex for validation
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -50,16 +49,17 @@ const SignInForm = () => {
       };
       try {
         console.log(process.env);
-        
+        showPopup("loading")
         const response = await axios.post(ABC_BACKEND_API_URL+'/users/login', dataToSend);
         login(response.data.user);
         hidePopup();
         setFormData({phone: '', password: ''})
      
-
+        hidePopup()
         
       } catch (error) {
      //   setErrors({wrongPwdandPhone:error.data.message})
+     hidePopup()
      if (error.response && error.response.data && error.response.data.message) {
       setErrors({wrongPwdandPhone:error.response.data.message})
       console.error('Error logging user:', error.response.data.message); // Display backend message

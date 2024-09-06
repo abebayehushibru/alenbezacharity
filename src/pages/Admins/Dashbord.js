@@ -7,21 +7,23 @@ import OnSeriesItemClick from "../../components/PieChart";
 import AdminRecentCard from "../../components/Cards/AdminRecentCard";
 import { Link } from "react-router-dom";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
+import { usePopup } from "../../context/popUpContext";
 
 const Dashbord = () => {
   const [data,setData]=useState()
-  const [loading,setLoading]=useState(true)
+
+  const {showPopup,hidePopup}=usePopup()
   useEffect( () => {
-    setLoading(true);
+    showPopup("loading");
       axios
       .get(ABC_BACKEND_API_URL+"/admin/dashboard")
       .then((response) => {
         console.log(response.data);
         const data=response.data
       setData(data);
-      setLoading(false);
+      hidePopup();
   }).catch((e)=>{
-    setLoading(false);
+    hidePopup();
 console.log(e);
 
   });

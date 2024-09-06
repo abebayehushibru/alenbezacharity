@@ -237,7 +237,7 @@ const DonateNow = () => {
             value={formData.donor}
             onChange={(e) => {
               if (e.target.value == "self" && !user) {
-                showPopup("login");
+                showPopup("sign-in");
               } else {
                 handleInputChange("donor", e.target.value);
               }

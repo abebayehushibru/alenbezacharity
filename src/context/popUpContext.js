@@ -4,10 +4,10 @@ import React, { createContext, useContext, useState } from "react";
 const PopupContext = createContext();
 
 export const PopupProvider = ({ children }) => {
-  const [visible, setVisible] = useState(false); // State to store the user data
-  const [type, setType] = useState(""); // State to store the user data
+  const [visible, setVisible] = useState(true); // State to store the user data
+  const [type, setType] = useState("loading"); // State to store the user data
 
-  const hidePopup = (userData) => {
+  const hidePopup = () => {
     setVisible(false);
      };
 

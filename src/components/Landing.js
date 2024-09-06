@@ -21,7 +21,7 @@ showPopup
           <div className=" w-64 flex gap-3">
           {!user?.token?<button
               className="justify-center flex flex-1 p-3 bg-[#F84D42] text-white font-semibold text-base rounded-[3px]  text-center"
-             onClick={()=>showPopup()}
+             onClick={()=>showPopup("sign-in")}
             >
               Login
             </button>: <Link
