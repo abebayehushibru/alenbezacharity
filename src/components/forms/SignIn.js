@@ -124,13 +124,13 @@ const SignInForm = () => {
         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         {errors.wrongPwdandPhone && <p className="text-red-500 text-sm pb-2">{errors.wrongPwdandPhone}</p>}
         {/* Submit Button */}
-         {loading ? (
+         {isLoading ? (
         <div
           className="w-full bg-[#F84D43] text-white py-2 rounded-md flex items-center justify-center gap-2 transition duration-300"
           style={{ height: '40px' }} // Matching button height
         >
           {/* Spinner */}
-          <div className="w-4 h-4 border-2 border-t-2 border-t-white border-gray-300 rounded-full animate-spin"></div>
+          <div className="w-3 h-3 border-2 border-t-2 border-t-white border-gray-300 rounded-full animate-spin"></div>
           {/* Loading Text */}
           <span className="text-sm font-medium text-white">Signing In...</span>
         </div>
