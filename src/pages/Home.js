@@ -5,6 +5,7 @@ import ChooseUs from "../components/ChooseUs";
 import Features from "../components/Features";
 import Footer from "../components/Footer";
 import Partner from "../components/Partner";
+import VideoComponent from "../components/Video";
 
 function Home() {
   return (
@@ -17,6 +18,7 @@ function Home() {
 
         <Leaders />
         <Features />
+        <VideoComponent/>
        
        
       </div>
