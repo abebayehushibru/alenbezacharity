@@ -8,6 +8,8 @@ import { ABC_BACKEND_API_URL } from '../../configf/config';
 const SignInForm = () => {
   const [formData, setFormData] = useState({ phone: '', password: '' });
   const [errors, setErrors] = useState({});
+  
+   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPrompt, setShowForgotPrompt] = useState(false);
   const [showForgotPopup, setShowForgotPopup] = useState(false);
   const {showPopup,hidePopup}=usePopup()
@@ -49,17 +51,16 @@ const SignInForm = () => {
       };
       try {
         console.log(process.env);
-        showPopup("loading")
+        setIsLoading(true)
         const response = await axios.post(ABC_BACKEND_API_URL+'/users/login', dataToSend);
         login(response.data.user);
+        setIsLoading(false)
         hidePopup();
         setFormData({phone: '', password: ''})
      
-        hidePopup()
-        
+    
       } catch (error) {
-     //   setErrors({wrongPwdandPhone:error.data.message})
-     hidePopup()
+       setIsLoading(false);
      if (error.response && error.response.data && error.response.data.message) {
       setErrors({wrongPwdandPhone:error.response.data.message})
       console.error('Error logging user:', error.response.data.message); // Display backend message
@@ -124,12 +125,25 @@ const SignInForm = () => {
         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         {errors.wrongPwdandPhone && <p className="text-red-500 text-sm pb-2">{errors.wrongPwdandPhone}</p>}
         {/* Submit Button */}
+         {isLoading ? (
+        <div
+          className="w-full bg-[#F84D43] text-white py-2 rounded-md flex items-center justify-center gap-2 transition duration-300"
+          style={{ height: '40px' }} // Matching button height
+        >
+          {/* Spinner */}
+          <div className="w-3 h-3 border-2 border-t-2 border-t-white border-gray-300 rounded-full animate-spin"></div>
+          {/* Loading Text */}
+          <span className="text-sm font-medium text-white">Signing In...</span>
+        </div>
+      ) : (
         <button
           type="submit"
           className="w-full bg-[#F84D43] text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+          onClick={handleSubmit}
         >
           Sign In
         </button>
+      )}
 
         {/* Forgot Password */}
         <p className="mt-4 text-center">

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import PostDetail from "./pages/PostDetail";
@@ -25,15 +26,15 @@ export const  AppContent=()=> {
   
     // Define routes that don't need Navbar and Footer
     const isAdminRoute = location.pathname.startsWith("/admin");
-
+useEffect(() => {
+    showPopup('loading');
+    // Simulating load end after a delay
+    setTimeout(hidePopup, 3000); // Adjust the time as needed
+  }, []);
   
     return (
       <>
-      <div className="absolute top-0 max-w-[1360px] w-full mx-auto max-h-full overflow-y-scroll" onLoad={() => {
-          showPopup('loading');
-          // Simulating load end after a delay
-          setTimeout(hidePopup, 2000); // Adjust the time as needed
-        }} >
+      <div className="absolute top-0 max-w-[1360px] w-full mx-auto max-h-full overflow-y-scroll"  >
         {/* Conditionally render Navbar and Footer based on route */}
         {!isAdminRoute && <Navbar />}
   
