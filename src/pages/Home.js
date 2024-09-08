@@ -6,6 +6,7 @@ import Features from "../components/Features";
 import Footer from "../components/Footer";
 import Partner from "../components/Partner";
 import VideoComponent from "../components/Video";
+import StartVideoComponent from "../components/srartVideo";
 
 function Home() {
   return (
@@ -13,6 +14,7 @@ function Home() {
       <Landing />
 
       <div className="relative flex flex-col gap-20 top-10 mb-10  ">
+        <StartVideoComponent/>
         <Blogs />
         <ChooseUs />
 
