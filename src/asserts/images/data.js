@@ -13,7 +13,17 @@ import gubgnit3 from "./post/gubgnit3.jpg";
 import gubae from "./final2.jpg";
 import legends from "./post/legends.jpg";
 import members from "./post/members.jpg";
+import nazretResult from "./post/Screenshot_20240909-190257.png"
 export const datas = [
+  {
+    id: 17,
+    img: nazretResult,
+    title:
+      "የምስራች ዜና ",
+      content:
+      " ውድ የአለንቤዛ ቤተሰቦች፥ እንዴት ከረማችሁ? ለዐዲሱ ዓመት እንኳን አደረሳችሁ እያልን፥ የማኅበራችን ተማሪ የኾነችው ተማሪ ናዝሬት ሽፈራው በ2016 ዓ.ም የተፈተነችዉን የ6ተኛ ክፍል ዞን ዐቀፍ ፈተና፥ በተሳካ ኹኔታ አጠናቃ ወደ ቀጣዩ ክፍል (7) የተዘዋወረች መኾኑን ስናበስራችኹ በታላቅ ደስታ ነው! እንኳን ደስ አላችሁ፥ እንኳን ደስ አለን! ይኼ የኹላችንም ድጋፍ ውጤት ነው። ዐብረን ከበረታን ደግሞ ከዚህም የተሻለ የምናይ ስለኾነ፥ ድጋፋችኹ አይለየን!  ",
+    date: "ጳጉሜ 2 2016 ዓ.ም",
+  },
   {
     id: 16,
     img: gubae,
