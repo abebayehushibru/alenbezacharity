@@ -4,8 +4,9 @@ import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: false, unique: true },
   password: { type: String, required: true },
+  address: { type: String, required: false },
   role: { type: String, default: 'member' },
   phonenumber: { type: String, required: true, unique: true },
   monthlyamount: { type: Number, required: true },
