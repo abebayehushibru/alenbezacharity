@@ -7,6 +7,7 @@ import cors from 'cors';
 import giftRoutes from './routes/giftRoutes.js';
 import childRoutes from './routes/childRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import postRoutes from './routes/postRoutes.js';
 
 dotenv.config();
 
@@ -25,7 +26,7 @@ app.use(express.json());
 
 // Routes
 app.use('/users', userRoutes); // Use user routes for all user-related endpoints
-
+app.use('/post', postRoutes);
 app.use('/gifts', giftRoutes);
 app.use('/child', childRoutes);
 app.use('/admin', adminRoutes);
