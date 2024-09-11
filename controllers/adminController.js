@@ -8,6 +8,36 @@ const getCurrentGCMonth = () => {
   const currentDate = new Date();
   return (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Get month in 'MM' format
 };
+// Controller function to update the user's role
+const updateUserRole = async (req, res) => {
+  const { customId, role } = req.body;
+
+  // Check if both customId and role are provided
+  if (!customId || !role) {
+    return res.status(400).json({ message: 'Both customId and role are required.' });
+  }
+
+  try {
+    // Find the user by customId
+    const user = await User.findOne({ customId });
+
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Update the user's role
+    user.role = role;
+
+    // Save the updated user
+    await user.save();
+
+    res.status(200).json({ message: 'User role updated successfully.' });
+  } catch (error) {
+    console.error('Error updating user role:', error);
+    res.status(500).json({ message: 'An error occurred while updating the user role.' });
+  }
+};
 
 // Admin Dashboard Route
 const getDashbordData=async (req, res) => {
@@ -85,4 +115,4 @@ const getDashbordData=async (req, res) => {
   }}
 
 
-export default getDashbordData;
+export  {getDashbordData,updateUserRole};

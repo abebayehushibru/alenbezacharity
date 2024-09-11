@@ -10,10 +10,15 @@ import { createTransaction } from '../utils/functions.js';
 // Register User
 export const createUser = async (req, res) => {
   try {
-    const { firstname, lastname, email, password, phonenumber, monthlyamount, createdate } = req.body;
-
+    const { firstname, lastname, email, password, phonenumber, monthlyamount, createdate,address } = req.body;
+    const query = [];
+    if (!phonenumber) {
+      return res.status(400).json({ message: 'Phoen number is required.' });
+    }
+    if (email) query.push({ email });
+    if (phonenumber) query.push({ phonenumber });
     // Check if email or phone number already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { phonenumber }] });
+    const existingUser = await User.findOne({ $or: query});
     if (existingUser) {
       const errorMessage =
         existingUser.email === email
@@ -30,6 +35,7 @@ export const createUser = async (req, res) => {
       firstname,
       lastname,
       email,
+      address,
       password: hashedPassword,
       phonenumber,
       monthlyamount,

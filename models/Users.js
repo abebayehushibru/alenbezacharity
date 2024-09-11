@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },
-  email: { type: String, required: false, unique: true },
+  email: { type: String, required: false,unique:false},
   password: { type: String, required: true },
   address: { type: String, required: false },
   role: { type: String, default: 'member' },
@@ -38,6 +38,30 @@ userSchema.pre('save', async function (next) {
 
     // Generate the custom ID in the format ABC/4-digit-number/last-2-digits-of-entry-year
     this.customId = `ABC/${number.toString().padStart(4, '0')}/${entryYear}`;
+  }
+  next();
+});
+
+// Middleware to check if email is unique before saving a new user
+userSchema.pre('save', async function (next) {
+  if (this.email) {
+    const existingUser = await mongoose.models.User.findOne({ email: this.email });
+    if (existingUser && existingUser._id.toString() !== this._id.toString()) {
+      // If an existing user is found with the same email but a different ID
+      return next(new Error('Email must be unique.'));
+    }
+  }
+  next();
+});
+
+// Middleware to check if email is unique before updating an existing user
+userSchema.pre('updateOne', async function (next) {
+  const update = this.getUpdate();
+  if (update.$set && update.$set.email) {
+    const existingUser = await mongoose.models.User.findOne({ email: update.$set.email });
+    if (existingUser && existingUser._id.toString() !== this.getQuery()._id.toString()) {
+      return next(new Error('Email must be unique.'));
+    }
   }
   next();
 });
