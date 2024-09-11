@@ -112,3 +112,15 @@ export const  editChild = async (req, res) => {
     res.status(400).json({ message: 'Error updating child.', error: error.message });
   }
 };
+export const getChildById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const child = await Child.findById(id);
+    if (!child) {
+      return res.status(404).json({ message: 'Child not found' });
+    }
+    res.status(200).json(child);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching child details', error: error.message });
+  }
+};

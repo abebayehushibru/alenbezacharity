@@ -86,23 +86,16 @@ export const getAllUsers = async (req, res) => {
     console.log("Fetching users...");
 
     // Fetch users with selected fields and concatenate firstname and lastname as 'name'
-    const users = await User.find({}, {
-      firstname: 1,
-      lastname: 1,
-      email: 1,
-      role: 1,
-      customId: 1,
-      phonenumber: 1,
-  monthlyamount: 1,
-
-    }).lean(); // `.lean()` to get plain JavaScript objects instead of Mongoose documents
-    
+    // const users = await User.find().lean(); // `.lean()` to get plain JavaScript objects instead of Mongoose documents
+    const users = await User.find(); // Fetch all users
+    // res.status(200).json(users);
     // Concatenate firstname and lastname to form 'name'
     const formattedUsers = await users.map(user => ({
       name: `${user.firstname} ${user.lastname}`,
       email: user.email,
       role: user.role,
       id: user.customId,
+      unique_id: user.id,
       phonenumber: user.phonenumber,
       monthlyamount:user.monthlyamount
     }));
@@ -151,7 +144,19 @@ export const findUserByCustomId = async (req, res) => {
     res.status(500).json({ message: error.message, success: false });
   }
 };
-
+// find user by custom id
+export const getMemeberById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user details', error: error.message });
+  }
+};
 
 
 
