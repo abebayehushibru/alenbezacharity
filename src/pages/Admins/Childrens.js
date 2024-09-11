@@ -4,6 +4,7 @@ import { IoEye } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
+import { Link } from "react-router-dom";
 
 const AllChildren = ({ params }) => {
   const [data, setData] = useState([]);
@@ -73,12 +74,12 @@ const AllChildren = ({ params }) => {
                 Delete
               </span>
             </div>
-            <div className="absolute text-blue-600 hover:text-white flex-row-reverse right-0 hover:w-full hover:z-10 action flex items-center gap-3 hover:bg-black/80 py-2 flex-1 px-1 transition-all ease-in-out duration-75">
+            <Link to={`./${params.row.id}`} className="absolute text-blue-600 hover:text-white flex-row-reverse right-0 hover:w-full hover:z-10 action flex items-center gap-3 hover:bg-black/80 py-2 flex-1 px-1 transition-all ease-in-out duration-75">
               <IoEye size={22} />
               <span className="absolute hidden left-0 text-white p-2 rounded-sm text-sm">
                 View
               </span>
-            </div>
+            </Link>
           </div>
         );
       },
@@ -87,7 +88,7 @@ const AllChildren = ({ params }) => {
 
   return (
     <div className="relative flex flex-1 h-full max-w-full p-2 py-3 bg-white">
-      <CustomizedTable columns={columns} rows={data} loading={loading} />
+      <CustomizedTable columns={columns} rows={data} loading={loading}  add={"child"}  ButtonOne={true} />
     </div>
   );
 };

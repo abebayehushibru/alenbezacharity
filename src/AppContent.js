@@ -19,6 +19,10 @@ import NotFound from "./pages/NotFound";
 import AllChildren from "./pages/Admins/Childrens";
 import ContactUs from "./pages/Contact";
 import { usePopup } from "./context/popUpContext";
+import ChildDetailPage from "./pages/Admins/ChildDetailPage";
+import MemberDetailPage from "./pages/Admins/MemberDetailPage";
+import AllPosts from "./pages/Admins/Post";
+import AdminPostDetail from "./pages/Admins/AdminPostDetail";
 
 export const  AppContent=()=> {
     const location = useLocation();
@@ -53,8 +57,12 @@ useEffect(() => {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashbord />} />
             <Route path="members/all" element={<Members />} />
+            <Route path="members/view/:id" element={<MemberDetailPage />} />
             <Route path="members/admins" element={<AllAdmins />} />
-            <Route path="childrens" element={<AllChildren />} />
+            <Route path="posts" element={<AllPosts />} />
+            <Route path="posts/:id" element={<AdminPostDetail />} />
+            <Route path="childrens" element={<AllChildren />}/>
+            <Route path="childrens/:id" element={<ChildDetailPage />} />
             childrens
             {/* Additional nested routes can go here */}
             <Route path="*" element={<NotFound />} />

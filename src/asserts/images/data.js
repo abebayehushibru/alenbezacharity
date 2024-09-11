@@ -61,7 +61,7 @@ export const datas = [
       },
       {
         id: 12,
-        img: gift1,
+        img: [finalmeeting,gift1,legends],
         title:
           "የደጋግ ልቦች የፍቅር ስጦታ ለአለንቤዛ ተማሪ ወላጅ!",
           content:

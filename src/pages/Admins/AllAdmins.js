@@ -6,6 +6,7 @@ import axios from "axios";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
 
 
+
 const AllAdmins = ({ params }) => {
     const [data,setData]=useState([])
     const [loading,setLoading]=useState(true)

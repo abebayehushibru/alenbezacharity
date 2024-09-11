@@ -76,7 +76,7 @@
   display: none;
 }
 .MuiDataGrid-footerContainer{
-  display: none !important;
+  display: flex !important;
 }
 .MuiDataGrid-scrollbar{
   display: none;
