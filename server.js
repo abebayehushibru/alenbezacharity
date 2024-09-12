@@ -26,7 +26,7 @@ app.use(express.json());
 
 // Routes
 app.use('/users', userRoutes); // Use user routes for all user-related endpoints
-app.use('/post', postRoutes);
+app.use('/posts', postRoutes);
 app.use('/gifts', giftRoutes);
 app.use('/child', childRoutes);
 app.use('/admin', adminRoutes);
