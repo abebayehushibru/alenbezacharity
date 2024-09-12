@@ -1,5 +1,6 @@
 // controllers/postController.js
 import cloudinary from '../config/cloudinary.js';
+import Comment from '../models/Comment.js';
 import Post from '../models/Post.js';
 
 
@@ -90,6 +91,14 @@ export const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Validate the ID format
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: 'Invalid Post ID format' });
+    }
+
+    // Delete comments associated with the post
+    await Comment.deleteMany({ postId: id });
+
     // Find and delete the post by ID
     const deletedPost = await Post.findByIdAndDelete(id);
 
@@ -97,13 +106,12 @@ export const deletePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    res.status(200).json({ message: 'Post deleted successfully' });
+    res.status(200).json({ message: 'Post and associated comments deleted successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error deleting post' });
+    res.status(500).json({ message: 'Error deleting post and associated comments' });
   }
 };
-
 
 export const getPostById = async (req, res) => {
   try {
@@ -121,10 +129,71 @@ export const getPostById = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // Respond with the found post
-    res.status(200).json(post);
+    // Fetch comments associated with the post
+    const comments = await Comment.find({ postId: id });
+
+    // Fetch recent posts excluding the current one, sorted by creation date
+    const recentPosts = await Post.find({ _id: { $ne: id } })
+      .sort({ createdAt: -1 }) // Sort by newest first
+      .limit(5); // Limit to 5 recent posts
+
+    // Respond with the found post, its comments, and recent posts
+    res.status(200).json({ post, comments, recentPosts });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error retrieving post' });
   }
 };
+
+// Controller to add a comment to a post
+export const createComment = async (req, res) => {
+  try {
+    const { postId, name, comment, image } = req.body;
+
+    // Validate the post ID format
+    if (!postId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: 'Invalid Post ID format' });
+    }
+
+    // Check if the post exists
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Create a new comment
+    const newComment = new Comment({
+      postId,
+      name,
+      comment,
+      image, // Ensure photo is correctly handled if it's a URL or file
+    });
+
+    // Save the comment to the database
+    await newComment.save();
+    // Respond with the created comment
+    res.status(201).json(newComment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error adding comment' });
+  }
+};
+
+// delete comments 
+export const deleteComment= async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find and delete the comment by ID
+    const deletedComment = await Comment.findByIdAndDelete(id);
+
+    if (!deletedComment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    res.status(200).json({ message: 'Comment deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting comment' });
+  }
+}

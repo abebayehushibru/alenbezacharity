@@ -4,10 +4,10 @@ import dotenv from 'dotenv';
 import connectDB from './db.js'; // Ensure .js extension
 import userRoutes from './routes/userRoutes.js';
 import cors from 'cors';
-import giftRoutes from './routes/giftRoutes.js';
 import childRoutes from './routes/childRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import postRoutes from './routes/postRoutes.js';
+import donationRoutes from './routes/donationRoutes.js';
 
 dotenv.config();
 
@@ -27,7 +27,7 @@ app.use(express.json());
 // Routes
 app.use('/users', userRoutes); // Use user routes for all user-related endpoints
 app.use('/posts', postRoutes);
-app.use('/gifts', giftRoutes);
+app.use('/donations', donationRoutes);
 app.use('/child', childRoutes);
 app.use('/admin', adminRoutes);
 

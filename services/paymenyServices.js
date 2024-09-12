@@ -34,17 +34,17 @@ export const initiateChapaPayment = async (data) => {
     const paymentData = {
       first_name: data.firstname,
       last_name: data.lastname,
-  
       currency: 'ETB',
       amount: data.amount, // Ensure amount is a string
-      tx_ref: data.transactionId,
+      tx_ref: `${data.transactionId}-${data.customId}-${data.donationType}`,
       callback_url: 'https://your-callback-url.com/', // Replace with your callback URL
-      return_url: 'https://your-return-url.com/', // Replace with your return URL
+      return_url: 'http://alenbezacharity.netlify.app/', // Replace with your return URL
       customization: {
         title: 'charity donation',
         description: 'Thanks for your gift',
       },
     };
+console.log(paymentData);
 
     // Configure Axios request headers
     const config = {
@@ -58,7 +58,6 @@ export const initiateChapaPayment = async (data) => {
       paymentData,
       config
     );
-console.log(response.data.data);
 
     // Extract the payment link from Chapa response
     const paymentLink = response.data.data;
@@ -66,6 +65,6 @@ console.log(response.data.data);
   } catch (error) {
     console.error("Error details 1:", JSON.stringify(error));
     console.error("Error details:", error.response.data);
-    res.status(500).json({ message: 'Error processing payment', error });
+ 
   }
 };
