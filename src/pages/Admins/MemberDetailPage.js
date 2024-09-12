@@ -16,17 +16,22 @@ const MemberDetailPage = () => {
   const { user } = useAuth(); // Get the current user from context
 
   useEffect(() => {
+    if (user?.token==""||user?.role=="member") {
+      window.location.replace("/")
+    }
     const fetchMemberDetails = async () => {
       try {
         const response = await axios.get(`${ABC_BACKEND_API_URL}/users/findById/${id}`); // Update the URL to match your users API endpoint
-        setMember(response.data);
+       
+        console.log(response.data);
+         setMember(response.data);
       } catch (error) {
         console.error('Error fetching member details:', error);
       }
     };
 
     fetchMemberDetails();
-  }, [id]);
+  }, [id,user?.token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,8 +71,7 @@ const MemberDetailPage = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    // Optionally, you can refetch the details to revert changes
-    // fetchMemberDetails();
+
   };
 
   if (!member) {
@@ -173,7 +177,32 @@ const MemberDetailPage = () => {
           />
           {errors.monthlyamount && <p className="text-red-500 text-sm">{errors.monthlyamount}</p>}
         </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">User Role</label>
+          <input
+            type=""
+            name=""
+            value={member.role}
+            onChange={handleChange}
+            disabled
+            className={`w-full px-4 py-2 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-300'} ${isEditing ? 'bg-white' : 'bg-gray-100'}`}
+          />
+        </div>
 
+     
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Address</label>
+          <input
+            type="text"
+            name="address"
+            value={member.address } // Handle cases where address might be undefined
+            onChange={handleChange}
+            disabled={!isEditing}
+            className={`w-full px-4 py-2 border rounded-md ${errors.address ? 'border-red-500' : 'border-gray-300'} ${isEditing ? 'bg-white' : 'bg-gray-100'}`}
+          />
+          {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+        </div>
         <div>
           <label className="block text-sm font-medium mb-2">Creation Date</label>
           <input
@@ -186,20 +215,6 @@ const MemberDetailPage = () => {
           />
           {errors.createdate && <p className="text-red-500 text-sm">{errors.createdate}</p>}
         </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Address</label>
-          <input
-            type="text"
-            name="address"
-            value={member.address || ''} // Handle cases where address might be undefined
-            onChange={handleChange}
-            disabled={!isEditing}
-            className={`w-full px-4 py-2 border rounded-md ${errors.address ? 'border-red-500' : 'border-gray-300'} ${isEditing ? 'bg-white' : 'bg-gray-100'}`}
-          />
-          {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
-        </div>
-
         {(isEditing || isLoading) && (
           <div className="col-span-full flex justify-end gap-4 mt-4">
             <div className='w-32'>

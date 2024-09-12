@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { usePopup } from "../../context/popUpContext";
+
 import { ABC_BACKEND_API_URL } from "../../configf/config";
 import { TiTimes } from "react-icons/ti";
+import CustomLoadingButton from "../controls/CustomButton";
+import { useToast } from "../../context/ToastContext";
 
 const PostForm = () => {
-  const { showPopup, hidePopup } = usePopup();
+  const { showToast } = useToast();
 
   // State for form data
   const [formData, setFormData] = useState({
@@ -13,7 +15,7 @@ const PostForm = () => {
     content: "",
     images: [],
   });
-
+  const [isLoading, setIsLoading] = useState(false);
   // State for errors
   const [errors, setErrors] = useState({});
   const [selectedImages, setSelectedImages] = useState([]);
@@ -73,27 +75,30 @@ const PostForm = () => {
       formData.images.forEach((file) => formDataToSend.append("images", file));
 
       try {
-        showPopup("loading");
-        const response = await axios.post(ABC_BACKEND_API_URL + "/posts", formDataToSend, {
+        setIsLoading(true);
+        const response = await axios.post(ABC_BACKEND_API_URL + "/posts/add", formDataToSend, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-        // Reset the form after successful submission
         setFormData({
           title: "",
           content: "",
           images: [],
         });
         setSelectedImages([]);
-        hidePopup();
-        alert("Post added successfully");
+        setIsLoading(false);
+        showToast("Post created successfully.", "success");
       } catch (error) {
+        console.log(error);
+        
         setErrors({ serverError: error.response?.data?.message || "An error occurred" });
-        hidePopup();
+        showToast("An error occurred please try again", "error");
+        setIsLoading(false);
       }
     }
   };
+
 
   // Function to remove an image from the selected images
   const handleRemoveImage = (index) => {
@@ -186,12 +191,8 @@ const PostForm = () => {
 
         {/* Submit Button */}
         <div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
-          >
-            Add Post
-          </button>
+          <CustomLoadingButton buttonText="Add Post" loadingText="Adding post" isLoading={isLoading}  type="submit"/>
+          
         </div>
       </form>
     </div>

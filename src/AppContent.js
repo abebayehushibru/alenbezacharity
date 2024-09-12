@@ -23,6 +23,7 @@ import ChildDetailPage from "./pages/Admins/ChildDetailPage";
 import MemberDetailPage from "./pages/Admins/MemberDetailPage";
 import AllPosts from "./pages/Admins/Post";
 import AdminPostDetail from "./pages/Admins/AdminPostDetail";
+import AllDeletedMembers from "./pages/Admins/AllDeletedMember";
 
 export const  AppContent=()=> {
     const location = useLocation();
@@ -59,6 +60,9 @@ useEffect(() => {
             <Route path="members/all" element={<Members />} />
             <Route path="members/view/:id" element={<MemberDetailPage />} />
             <Route path="members/admins" element={<AllAdmins />} />
+            <Route path="members/admins/:id" element={<MemberDetailPage />} />
+            <Route path="members/deleted" element={<AllDeletedMembers />} />
+            <Route path="members/deleted/:id" element={<MemberDetailPage />} />
             <Route path="posts" element={<AllPosts />} />
             <Route path="posts/:id" element={<AdminPostDetail />} />
             <Route path="childrens" element={<AllChildren />}/>

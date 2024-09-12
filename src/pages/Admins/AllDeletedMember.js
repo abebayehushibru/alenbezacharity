@@ -4,67 +4,67 @@ import { IoEye } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
+
+import { Link } from "react-router-dom";
 import { useToast } from "../../context/ToastContext";
 import DeleteConfirmation from "../../components/Delete";
-import { Link } from "react-router-dom";
+
+const AllDeletedMembers = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const {showToast}=useToast();
+  const [selectedMemberId, setSelectedMemberId] = useState(null); // Track the post to delete
+ const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Track the visibility of the confirmation popup
 
 
-
-const AllAdmins = ({ params }) => {
-    const [data,setData]=useState([])
-    const [loading,setLoading]=useState(true);
-    const [selectedMemberId, setSelectedMemberId] = useState(null); // Track the post to delete
-    const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Track the visibility of the confirmation popup
-
-   const {showToast}= useToast()
-    useEffect( () => {
+  useEffect(() => {
+    const fetchData = async () => {
       setLoading(true);
-        
-        axios
-        .get(ABC_BACKEND_API_URL+"/users/all")
-        .then(async (response) => {
-       const formattedUsers = response.data.filter(user => user.role !== "member" && user.role !== "banned");
-        setData(formattedUsers||[])
+      try {
+        const response = await axios.get(`${ABC_BACKEND_API_URL}/users/all`);
+        const formattedUsers = response.data.filter(user => user.role === "banned");
+        console.log(response.data.reverse());
+        setData(formattedUsers);
+      } catch (e) {
+        console.error(e);
+      } finally {
         setLoading(false);
-    }).catch((e)=>{
-      setLoading(false);
-       showToast("Something went be wrong  please check your connection or try again","error");
+      }
+    };
 
-
-    });
-      }, []);
-       // Function to open the confirmation popup
+    fetchData();
+  }, []);
   const openConfirmPopup = (id) => {
     setSelectedMemberId(id);
     setShowConfirmPopup(true);
   };
-   // Function to handle the delete action
-   const handleRemoveRole = async (id) => {
+  const handleRemoveRole = async (id) => {
     try {
+      setLoading(true);
       // Perform the deletion using axios
       await axios.post(`${ABC_BACKEND_API_URL}/admin/updateRole`, { customId: selectedMemberId ,role:"member"});
       // Update state after deletion
       setData(data.filter((dt) => dt.id !== id));
       setShowConfirmPopup(false); // Hide popup after successful deletion
-      showToast("Admin role removed successfully.","success")
+      showToast("User has been reinstated as a member successfully.", "success");
       setShowConfirmPopup(false);
+      setLoading(false);
      
     } catch (error) {
       setShowConfirmPopup(false);
-      console.error("Error deleting post:", error);
+      setLoading(false);
+      console.error("Error reinstated as member:", error);
      
-      showToast("Failed to delete post.","error")
+      showToast("Error has occured reinstated as member","error")
     }
   };
 
-
-  // eslint-disable-next-line no-sparse-arrays
   const columns = [
-    { field: "id", headerName: "Id",width:150},
-    { field: "name", headerName: " Full Name", width:200},
-    { field: "email", headerName: "Email", width:200},
+    { field: "id", headerName: "Id", width: 150 },
+    { field: "name", headerName: "Full Name", width: 200 },
+    { field: "monthlyamount", headerName: "M/Donation", width: 150 },
+    { field: "status", headerName: "P.Month", width: 100 },
     { field: "phonenumber", headerName: "Phone No", width: 160 },
-    { field: "role", headerName: " Role", width: 100 },
     {
       field: "action",
       headerName: "Action",
@@ -80,7 +80,7 @@ const AllAdmins = ({ params }) => {
                 onClick={() => openConfirmPopup(params.row.id)}
               />
               <span className="absolute hidden right-0 text-white p-2 rounded-sm text-sm">
-                Delete
+              Reinstate
               </span>
             </div>
             <Link
@@ -96,19 +96,22 @@ const AllAdmins = ({ params }) => {
         );
       },
     },
-    ,
   ];
-  
 
   return (
     <div className="relative flex max-h-full p-2 py-3 w-full bg-white">
-      <CustomizedTable columns={columns} rows={data} loading={loading} ButtonOne={true}  add={"admin"}/>
+      <CustomizedTable
+        columns={columns}
+        rows={data}
+        loading={loading}
+       
+      />
       {showConfirmPopup && (
     
-    <DeleteConfirmation onCancel={() => setShowConfirmPopup(false)} onDelete={() => handleRemoveRole(selectedMemberId) } message={"  Are you sure you want to remove admin role?"}/>
+    <DeleteConfirmation onCancel={() => setShowConfirmPopup(false)} onDelete={() => handleRemoveRole(selectedMemberId) } message={" Are you sure you want to reinstate this banned member?"} buttonText="Reinstate"/>
   )}
     </div>
   );
 };
 
-export default AllAdmins;
+export default AllDeletedMembers;

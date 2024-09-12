@@ -6,18 +6,17 @@ import { Link } from "react-router-dom";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
 import axios from "axios"; // Ensure axios is imported
 import DeleteConfirmation from "../../components/Delete";
-import Toast from "../../components/Toast";
+
+import { useToast } from "../../context/ToastContext";
 
 const AllPosts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null); // Track the post to delete
   const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Track the visibility of the confirmation popup
-  const [toast, setToast] = useState({message:"",type:""}); // Track the visibility of the confirmation popup
- // Function to show the toast
- const showToast = (message, type) => {
-  setToast({ message, type });
-};
+  const {showToast} =useToast()
+  // Track the visibility of the confirmation popup
+
   const data = [
     {
       id: "1",
@@ -40,8 +39,10 @@ const AllPosts = () => {
       setPosts(posts.filter((post) => post.id !== id));
       setShowConfirmPopup(false); // Hide popup after successful deletion
       showToast("Post deleted successfully.","success")
+      setShowConfirmPopup(false);
      
     } catch (error) {
+      setShowConfirmPopup(false);
       console.error("Error deleting post:", error);
      
       showToast("Failed to delete post.","error")
@@ -127,12 +128,7 @@ const AllPosts = () => {
     
         <DeleteConfirmation onCancel={() => setShowConfirmPopup(false)} onDelete={() => handleDeletePost(selectedPostId) } message={"  Are you sure you want to delete this post?"}/>
       )}
-    {toast && (
-       <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={()=>setToast(null)}
-        />)}
+    
     </div>
   );
 };

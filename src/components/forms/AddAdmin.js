@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { usePopup } from "../../context/popUpContext";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
 import CustomLoadingButton from "../controls/CustomButton";
+import { useToast } from "../../context/ToastContext";
 
 const AddAdmin = ({ id, firstname, lastname, phoneNumber }) => {
-  const { showPopup, hidePopup } = usePopup();
+  const { showToast } = useToast();
 
   // State for form data
   const [formData, setFormData] = useState({
@@ -72,18 +72,28 @@ const AddAdmin = ({ id, firstname, lastname, phoneNumber }) => {
 
   // Form submission handler
   const handleSubmit = async (e) => {
-    setIsLoading(true)
+  
     e.preventDefault();
     if (!validateForm()) return;
 
     try {
-      
-      await axios.post(`${ABC_BACKEND_API_URL}/admin/add`, formData);
-      alert("Admin role updated successfully!");
+      setIsLoading(true)
+      await axios.post(`${ABC_BACKEND_API_URL}/admin/updateRole`, { customId: formData.id.toUpperCase() ,role:formData.adminRole});
+      showToast("Role updated successfully!","success");
+      setShowAdminDetails(false)
+      setFormData({
+        id: null,
+       firstname: "",
+        lastname: "",
+        phonenumber: "",
+        adminRole: "",
+      })
+    
       setIsLoading(false)
     } catch (error) {
        setIsLoading(false)
-      setErrors({ serverError: error.response?.data?.message || "Failed to update admin role." });
+       console.log(error);
+       showToast( error.response?.data?.message || "Failed to update admin role." ,"error");
     
     }
   };
@@ -102,7 +112,7 @@ const AddAdmin = ({ id, firstname, lastname, phoneNumber }) => {
               name="id"
               value={formData.id}
               onChange={handleChange}
-              placeholder="Enter Admin ID"
+              placeholder="Enter user ID"
               className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                 errors.id ? "border-red-500 ring-red-500" : "focus:ring-blue-500"
               }`}

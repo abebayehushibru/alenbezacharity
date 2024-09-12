@@ -109,6 +109,7 @@ const SignUpForm = () => {
           phone: "",
           email: "",
           amount: "",
+          address: "",
           customAmount: "",
           password: "",
           confirmPassword: "",
@@ -230,9 +231,26 @@ const SignUpForm = () => {
             <p className="text-red-500 text-sm">{errors.email}</p>
           )}
         </div>
-
+        <div>
+        <label className="block text-lg font-medium mb-2">
+        Work Address</label>
+          <input
+            type="address"
+            name="address"
+            onFocus={() => handleInputFocus("address")}
+            value={formData.address}
+            onChange={handleChange}
+            placeholder="Enter Address"
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+              errors.address
+                ? "border-red-500 ring-red-500"
+                : "focus:ring-blue-500"
+            }`}
+          />
+          {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+        </div>
         {/* Donation Amount */}
-        <div className="sm:col-span-2">
+        <div >
           <label className="block text-lg font-medium mb-2">
             Monthly Donation Amount *
           </label>

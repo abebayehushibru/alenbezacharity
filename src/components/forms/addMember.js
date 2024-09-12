@@ -3,12 +3,14 @@ import { usePopup } from "../../context/popUpContext";
 import axios from "axios";
 
 import { ABC_BACKEND_API_URL } from "../../configf/config";
+import { useToast } from "../../context/ToastContext";
+import CustomLoadingButton from "../controls/CustomButton";
 
 
 const AddMember = () => {
-  const { showPopup, hidePopup } = usePopup();
 
-
+const [isLoading,setIsloading]=useState()
+const {showToast}=useToast()
 
 
   const generateRandomPassword = () => {
@@ -27,6 +29,7 @@ const AddMember = () => {
     phone: "",
     email: "",
     amount: "",
+    address: "",
     customAmount: "",
     password: generateRandomPassword(), // Set the random password initially
     confirmPassword: "",
@@ -75,6 +78,7 @@ const AddMember = () => {
   };
 
   const handleSubmit = async (e) => {
+   
     e.preventDefault();
     if (validateForm()) {
       const dataToSend = {
@@ -82,12 +86,13 @@ const AddMember = () => {
         lastname: formData.lastName,
         phonenumber: formData.phone,
         email: formData.email,
+        address:formData.address,
         password: formData.password,
         monthlyamount: formData.amount !== "other" ? formData.amount : formData.customAmount,
         createdate: new Date().toISOString(),
       };
       try {
-        showPopup("loading");
+        setIsloading(true);
         const response = await axios.post(
           ABC_BACKEND_API_URL + "/users/register",
           dataToSend
@@ -99,20 +104,24 @@ const AddMember = () => {
           phone: "",
           email: "",
           amount: "",
+          address: "",
           customAmount: "",
           password: generateRandomPassword(),
           confirmPassword: "",
         });
-        hidePopup();
+        setIsloading(false);
+        showToast("Member added successfully","success")
+       
       } catch (error) {
+        setIsloading(false);
         if (error.response && error.response.data && error.response.data.message) {
-          setErrors({ wrongonserver: error.response.data.message });
+          showToast(error.response.data.message ,"error");
           console.error('Error logging user:', error.response.data.message);
         } else {
-          setErrors({ wrongonserver: error.message });
+          showToast( error.message ,"error");
           console.error('Unknown error:', error.message);
         }
-        hidePopup();
+      
       }
     }
   };
@@ -192,9 +201,23 @@ const AddMember = () => {
           />
           {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
         </div>
-
+        <div>
+          <label className="block text-sm font-medium mb-2">Work Address</label>
+          <input
+            type="address"
+            name="address"
+            onFocus={() => handleInputFocus("address")}
+            value={formData.address}
+            onChange={handleChange}
+            placeholder="Enter Address"
+            className={`w-full px-4 py-1 border rounded-md focus:outline-none focus:ring-2 ${
+              errors.email ? "border-red-500 ring-red-500" : "focus:ring-blue-500"
+            }`}
+          />
+          {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+        </div>
         {/* Donation Amount */}
-        <div className="sm:col-span-2">
+        <div className="sm:col-span-1">
           <label className="block text-sm font-medium mb-2">Monthly Donation Amount *</label>
           <select
             name="amount"
@@ -233,12 +256,8 @@ const AddMember = () => {
 
         {errors.wrongonserver && <p className="text-red-500 text-sm">{errors.wrongonserver}</p>}
         <div className="sm:col-span-2">
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-1 rounded-md hover:bg-blue-600 transition duration-300"
-          >
-            Save as Member
-          </button>
+          <CustomLoadingButton isLoading={isLoading} loadingText="Saving member" buttonText=" Save as Member"      type="submit" />
+         
         </div>
       </form>
     </div>
