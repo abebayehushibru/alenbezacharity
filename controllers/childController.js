@@ -16,80 +16,56 @@ export const getAllChildren = async (req, res) => {
 };
 
 export const addChild = async (req, res) => {
-    // Array of new child data
-    const childrenData = [
-        {
-          firstName: "Pinel",
-          lastName: "Area",
-          grade: "4th",
-          enteryYear: "2011",
-        },
-        {
-          firstName: "Rahimet",
-          lastName: "Abdu",
-          grade: "3th",
-          enteryYear: "2012",
-        },
-        {
-          firstName: "Teketel",
-          lastName: "Alemu",
-          grade: "3th",
-          enteryYear: "2012",
-        },
-        {
-          firstName: "Nazret",
-          lastName: "Shifera",
-          grade: "6th",
-          enteryYear: "2013",
-        },
-        {
-          firstName: "Getayawkal",
-          lastName: "Gutu",
-          grade: "3th",
-          enteryYear: "2011",
-        },
-        {
-          firstName: "Wubalem",
-          lastName: "Yohanis",
-          grade: "3th",
-          enteryYear: "2012",
-        },
-        {
-          firstName: "Muluken",
-          lastName: "Alemayehu",
-          grade: "3th",
-          enteryYear: "2011",
-        },
-        {
-          firstName: "Frikos",
-          lastName: "Temesgen",
-          grade: "3th",
-          enteryYear: "2012",
-        },
-        {
-          firstName: "Mesafnt",
-          lastName: "Mariam",
-          grade: "3th",
-          enteryYear: "2012",
-        }
-      ];
-  
-    try {
-      // Clear all existing data
-     //// await Child.deleteMany({});
-  
-      // Add new children data
-      const newChildren = await Child.insertMany(childrenData);
-  console.log(newChildren.length);
-  
-      // Log the new children for debugging
-      console.log("newChildren:", newChildren);
-  
-      res.status(201).json({ message: 'Children added successfully.',  });
-    } catch (error) {
-      res.status(400).json({ message: 'Error adding children.', error: error.message });
+  try {
+    // Extract data from the request body
+    const {
+      firstName,
+      lastName,
+      nickName,
+      grade,
+      hobbies,
+      favoriteSubject,
+      entryYear,
+      enrolledDate,
+    } = req.body;
+
+    // Validation: Check required fields
+    if (!firstName || !lastName || !grade || !entryYear) {
+      return res.status(400).json({
+        message: 'First name, last name, grade, and entry year are required.',
+      });
     }
-  };
+
+    // Convert hobbies string to an array if it's provided as a comma-separated string
+    const hobbiesArray = hobbies ? hobbies.split(',').map((hobby) => hobby.trim()) : [];
+
+    // Create a new child document
+    const newChild = new Child({
+      firstName,
+      lastName,
+      nickName,
+      grade,
+      hobbies: hobbiesArray,
+      favoriteSubject,
+      enteryYear: entryYear, // Ensure 'enteryYear' matches the schema spelling
+      enrolledDate: enrolledDate ? new Date(enrolledDate) : new Date(), // Set default to current date if not provided
+    });
+
+    // Save the child to the database
+    await newChild.save();
+
+    // Respond with success message
+    res.status(201).json({
+      message: 'Child added successfully',
+      child: newChild,
+    });
+  } catch (error) {
+    // Handle errors, e.g., database errors
+    res.status(500).json({
+      message: 'Error adding child',
+      error: error.message,
+    });
+  }};
  
 
 export const  editChild = async (req, res) => {
@@ -124,3 +100,23 @@ export const getChildById = async (req, res) => {
     res.status(500).json({ message: 'Error fetching child details', error: error.message });
   }
 };
+
+export const deleteChild= async (req, res) => {
+  const { id } = req.params; // Extract the child's ID from the request parameters
+
+  try {
+    // Find the child by ID and delete
+    const deletedChild = await Child.findByIdAndDelete(id);
+
+    // Check if the child was found and deleted
+    if (!deletedChild) {
+      return res.status(404).json({ message: 'Child not found' });
+    }
+
+    // Respond with success message
+    res.status(200).json({ message: 'Child deleted successfully', child: deletedChild });
+  } catch (error) {
+    // Handle errors, such as invalid IDs or database errors
+    res.status(500).json({ message: 'Error deleting child', error: error.message });
+  }
+}

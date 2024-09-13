@@ -1,5 +1,5 @@
 import express from 'express';
-import { addChild, editChild, getAllChildren, getChildById } from '../controllers/childController.js';
+import { addChild, deleteChild, editChild, getAllChildren, getChildById } from '../controllers/childController.js';
 const childRoutes=express.Router()
 // Route to get all children
 
@@ -8,8 +8,10 @@ childRoutes.get('/', getAllChildren);
 childRoutes.get('/:id', getChildById);
 // Route to add a new child
 childRoutes.post('/add', addChild);
+// Route to delete a child
+childRoutes.delete('/delete/:id', deleteChild);
 
 // Route to edit an existing child
-childRoutes.put('/edit/:id', editChild);
+childRoutes.post('/edit/:id', editChild);
 
 export default childRoutes;
