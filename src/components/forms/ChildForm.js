@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { usePopup } from "../../context/popUpContext";
+
 import axios from "axios";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
+import { useToast } from "../../context/ToastContext";
+import CustomLoadingButton from "../controls/CustomButton";
 
 const AddChild = () => {
-  const { showPopup, hidePopup } = usePopup();
-
+const { showToast  } = useToast();
+const [isSaving,setIsSaving]=useState()
   // State for form data
   const [formData, setFormData] = useState({
     firstName: "",
@@ -55,8 +57,8 @@ const AddChild = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        showPopup("loading");
-        const response = await axios.post(ABC_BACKEND_API_URL + "/children/register", formData);
+      setIsSaving(true)
+       await axios.post(ABC_BACKEND_API_URL + "/child/add", formData);
         // Reset the form after successful submission
         setFormData({
           firstName: "",
@@ -68,11 +70,13 @@ const AddChild = () => {
           entryYear: "",
           enrolledDate: new Date().toISOString(),
         });
-        hidePopup();
-        alert("Child added successfully");
+        setIsSaving(false)
+    
+        showToast("Child added successfully","success");
       } catch (error) {
+        setIsSaving(false)
         setErrors({ serverError: error.response?.data?.message || "An error occurred" });
-        hidePopup();
+        showToast("Something went wrong","error");
       }
     }
   };
@@ -189,12 +193,8 @@ const AddChild = () => {
 
         {/* Submit Button */}
         <div className="sm:col-span-2">
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-1 rounded-md hover:bg-blue-600 transition duration-300"
-          >
-            Add Child
-          </button>
+          <CustomLoadingButton isLoading={isSaving} loadingText="saving child"  type="submit" buttonText=" Add Child"/>
+         
         </div>
       </form>
     </div>

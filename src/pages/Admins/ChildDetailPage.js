@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'; // Assuming you have this c
 import { ABC_BACKEND_API_URL } from '../../configf/config';
 import CustomLoadingButton from '../../components/controls/CustomButton';
 import AdminRecentCard from '../../components/Cards/AdminRecentCard';
+import { useToast } from '../../context/ToastContext';
 
 const ChildDetailPage = () => {
   const { id } = useParams(); // Get the child ID from URL params
@@ -13,19 +14,20 @@ const ChildDetailPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
   const { user } = useAuth(); // Get the current user from context
-
+  const { showToast } = useToast(); 
   useEffect(() => {
     const fetchChildDetails = async () => {
       try {
         const response = await axios.get(`${ABC_BACKEND_API_URL}/child/${id}`); // Update the URL to match your children API endpoint
         setChild(response.data);
       } catch (error) {
+        showToast("Error fetching child details check intertnet connection","error")
         console.error('Error fetching child details:', error);
       }
     };
 
     fetchChildDetails();
-  }, [id]);
+  }, [id, showToast]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,11 +43,16 @@ const ChildDetailPage = () => {
     setIsLoading(true)
     if (validateFields()) {
       try {
-        await axios.put(`/child/edit/${id}`, child);
+        await axios.post(ABC_BACKEND_API_URL+`/child/edit/${id}`, child);
         setIsLoading(false)
         setIsEditing(false);
+        showToast("A child details  updated successfully","success")
+     
+        
       } catch (error) {
         setIsLoading(false)
+        showToast("Error updating child details Try again","error")
+     
         console.error('Error saving child details:', error);
       }
     }

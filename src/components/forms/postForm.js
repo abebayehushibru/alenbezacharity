@@ -166,7 +166,7 @@ const PostForm = () => {
 
         {/* Selected Images Preview */}
         {selectedImages.length > 0 && (
-          <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className="mt-4 grid grid-cols-3 gap-2 h-40 overflow-y-auto">
             {selectedImages.map((image, index) => (
               <div key={index} className="relative">
                 <img

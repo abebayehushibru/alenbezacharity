@@ -1,44 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import img1 from "../asserts/images/landingimage.jpg";
+import axios from "axios";
 import RecentCards from "../components/Cards/RecentCards";
-import { datas } from "../asserts/images/data";
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 import Comment from "../components/Comment";
 import { useAuth } from "../context/AuthContext";
+import { ABC_BACKEND_API_URL } from "../configf/config";
 
 const PostDetail = () => {
   const { user } = useAuth();
   const { id } = useParams();
-  const post = datas.find((item) => item.id === Number(id));
-  const [newComment, setNewComment] = useState({ postid: id, name: "", comment: "", photo: null });
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      name: "Abebayehu",
-      photo: null,
-      comment: "የማኅበራችን አባል የኾነው ወንድም ማሩ ቁንቢ ባደረገልን የፍራሽ እhhdhijis ና የ።",
-    },
-  ]);
-  const recentPosts = datas.filter((item) => item.id !== parseInt(id)).slice(0, 5);
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [newComment, setNewComment] = useState({});
+  const [comments, setComments] = useState([]);
+  const [recentPosts, setRecentPosts] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [errors, setErrors] = useState({});
 
-  if (!post) {
-    return <p className="flex flex-1 justify-center items-center py-40">Post not found {id}</p>;
+  // Fetch post details by ID
+  useEffect(() => {
+    setNewComment({ postId: id, name: "", comment: "", photo: null })
+    const fetchPost = async () => {
+      try {
+        const { data } = await axios.get(ABC_BACKEND_API_URL+`/posts/${id}`);
+        console.log(data);
+        
+        setPost(data.post);
+        setComments(data.comments || []); // Assuming comments are part of the response
+        setRecentPosts(data.recentPosts || []); // Modify based on your API structure
+      } catch (error) {
+        console.log(error);
+        
+        setError("Failed to fetch post details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
+  }, [id]);
+
+  if (loading) {
+    return <p className="flex flex-1 justify-center items-center py-40">Loading...</p>;
+  }
+
+  if (error || !post) {
+    return <p className="flex flex-1 justify-center items-center py-40">{error || `Post not found ${id}`}</p>;
   }
 
   // Handle next image
   const handleNext = () => {
-    if (post.img.length > 1) {
-      setCurrentImageIndex((prevIndex) => (prevIndex === post.img.length - 1 ? 0 : prevIndex + 1));
+    if (post.images.length > 1) {
+      setCurrentImageIndex((prevIndex) => (prevIndex === post.images.length - 1 ? 0 : prevIndex + 1));
     }
   };
 
   // Handle previous image
   const handlePrev = () => {
-    if (post.img.length > 1) {
-      setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? post.img.length - 1 : prevIndex - 1));
+    if (post.images.length > 1) {
+      setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? post.images.length - 1 : prevIndex - 1));
     }
   };
 
@@ -63,23 +85,11 @@ const PostDetail = () => {
     }
 
     try {
-      // Replace with your API call here
-      const response = await fetch("/api/comments", {
-        method: "POST",
-        body: JSON.stringify(newComment),
+      const response = await axios.post(ABC_BACKEND_API_URL+"/posts/comment", newComment, {
         headers: { "Content-Type": "application/json" },
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setErrors(errorData.errors || { general: "An error occurred while submitting your comment." });
-        return;
-      }
-
-      // Assuming the backend returns the new comment
-      const addedComment = await response.json();
-      setComments((prev) => [...prev, addedComment]);
-      setNewComment({ postid: id, name: "", comment: "", photo: null });
+      setComments((prev) => [...prev, response.data]);
+      setNewComment({ postId: id, name: "", comment: "", image: null });
     } catch (error) {
       setErrors({ general: "Failed to submit comment. Please try again later." });
     }
@@ -90,21 +100,21 @@ const PostDetail = () => {
       <div className="sm:w-[70%] w-full flex flex-col gap-5">
         <div className="relative w-full h-[350px] sm:h-[550px] ">
           <img
-            src={post.img.length > 0 ? post.img[currentImageIndex] : img1}
+            src={ post.images[currentImageIndex]}
             className="relative w-full rounded-md object-cover h-full"
             alt="Post Detail"
           />
-          {post.img.length > 1 && (
+          {post.images.length > 1 && (
             <>
               <button
                 onClick={handlePrev}
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200"
+                className="absolute left-1 top-1/2 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200"
               >
                 <FaAnglesLeft />
               </button>
               <button
                 onClick={handleNext}
-                className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-md hover:bg-gray-200"
               >
                 <FaAnglesRight />
               </button>
@@ -121,12 +131,12 @@ const PostDetail = () => {
               <h2 className="text-sm font-semibold uppercase text-black/40">All Comments</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-100 p-2">
+            {comments.length>0 && <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-100 p-2">
               {comments.map((cmt) => (
-                <Comment key={cmt.id} name={cmt.name} photo={cmt.photo} comment={cmt.comment} />
+                <Comment key={cmt._id} name={cmt.name} photo={cmt.photo} comment={cmt.comment} />
               ))}
-            </div>
-             <form onSubmit={handleAddComment} className="flex flex-col gap-3 mt-5">
+            </div>}
+            <form onSubmit={handleAddComment} className="flex flex-col gap-3 mt-5 min-w-[380px]">
               <h2 className="text-sm font-semibold uppercase text-black/40">Add a Comment</h2>
               <input
                 type="text"
@@ -134,7 +144,7 @@ const PostDetail = () => {
                 value={!user?.token ? newComment.name : `${user.firstname} ${user.lastname}`}
                 onChange={handleInputChange}
                 placeholder="Your Name"
-                className="p-2 border rounded-md"
+                className="p-2 border rounded-md focus:outline-blue-400"
                 disabled={!!user?.token}
                 required
               />
@@ -144,12 +154,11 @@ const PostDetail = () => {
                 value={newComment.comment}
                 onChange={handleInputChange}
                 placeholder="Your Comment"
-                className="p-2 border rounded-md"
+                className="p-2 border rounded-md focus:outline-blue-400"
                 rows="3"
                 required
               />
-                  {errors.general && <p className="text-red-500">{errors.general}</p>}
-       
+              {errors.general && <p className="text-red-500">{errors.general}</p>}
               {errors.comment && <p className="text-red-500">{errors.comment}</p>}
               <button
                 type="submit"
@@ -168,7 +177,7 @@ const PostDetail = () => {
         </div>
         <div className="flex flex-col space-y-3">
           {recentPosts.map((recentPost) => (
-            <RecentCards key={recentPost.id} data={recentPost} />
+            <RecentCards key={recentPost._id} data={recentPost} />
           ))}
         </div>
       </div>

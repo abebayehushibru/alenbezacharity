@@ -1,16 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import img1 from "../../asserts/images/landingimage.jpg"; // Ensure this path is correct
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
+import { formatDate } from "../../services/functions";
 
 const RecentCards = ({ data }) => {
   return (
     <Link
       className="flex gap-5 border-black/10 border-solid border-[1px] p-2 rounded-sm"
-      to={`/post-detail/${data.id}`} // Dynamically set the link based on the post's id
+      to={`/post-detail/${data._id}`} // Dynamically set the link based on the post's id
     >
       <img
-        src={data.img || img1}
+        src={data.images[0]}
         className="h-20 w-20 rounded-sm object-cover"
         alt="post"
       />
@@ -21,7 +21,7 @@ const RecentCards = ({ data }) => {
         <div className="flex items-center gap-3">
           <MdOutlineAccessTimeFilled color="#F84D43" size={16} />
           <p className="text-left text-[12px] text-black/50 font-serif">
-            {data.date || "Date not available"} {/* Display post date */}
+            { formatDate(data.createdAt) || "Date not available"} {/* Display post date */}
           </p>
         </div>
       </div>

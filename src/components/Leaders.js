@@ -36,8 +36,8 @@ const Leaders = () => {
         <div className=' flex w-full flex-col justify-center sm:px-8 px-4 gap-5 sm:w-[75%] sm:flex-row mx-auto'>
 
 {
-  data.map((leader)=>{
-return   <LeaderCard from={leader.from} img={leader.img} role={leader.role} phone={leader.phone} tg={leader.tg} name={leader.name}/>
+  data.map((leader,index)=>{
+return   <LeaderCard key={index} from={leader.from} img={leader.img} role={leader.role} phone={leader.phone} tg={leader.tg} name={leader.name}/>
   })
 }
        

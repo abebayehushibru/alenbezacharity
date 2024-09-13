@@ -1,51 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CustomizedTable from "../../components/Tables/Table1";
 import { IoEye } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
-import axios from "axios"; // Ensure axios is imported
+import axios from "axios";
 import DeleteConfirmation from "../../components/Delete";
-
 import { useToast } from "../../context/ToastContext";
 
 const AllPosts = () => {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedPostId, setSelectedPostId] = useState(null); // Track the post to delete
-  const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Track the visibility of the confirmation popup
-  const {showToast} =useToast()
-  // Track the visibility of the confirmation popup
+  const [loading, setLoading] = useState(true);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const { showToast } = useToast();
 
-  const data = [
-    {
-      id: "1",
-      title: "Exploring the Universe",
-      author: "Jane Doe",
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus imperdiet, nulla in varius hendrerit...",
-      createdDate: "2024-09-05T12:34:56Z",
-      image: ["https://example.com/image1.jpg"],
-    },
-    // ... add other data items
-  ];
+  // Fetch all posts when the component mounts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${ABC_BACKEND_API_URL}/posts`);
+
+        // Map over the fetched data to change _id to id
+        const fetchedArray = response.data.map((post,index) => ({
+          ...post,
+          id: post._id, 
+          index:index+1 // Rename _id to id
+        }));
+  
+        setPosts(fetchedArray);
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        showToast("Failed to fetch posts.", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, [showToast]);
 
   // Function to handle the delete action
   const handleDeletePost = async (id) => {
     try {
-      // Perform the deletion using axios
-      await axios.delete(`${ABC_BACKEND_API_URL}/posts/${id}`);
-      // Update state after deletion
-      setPosts(posts.filter((post) => post.id !== id));
-      setShowConfirmPopup(false); // Hide popup after successful deletion
-      showToast("Post deleted successfully.","success")
+      await axios.delete(`${ABC_BACKEND_API_URL}/posts/delete/${id}`);
+      setPosts(posts.filter((post) => post._id !== id)); // Update state after deletion
       setShowConfirmPopup(false);
-     
+      showToast("Post deleted successfully.", "success");
     } catch (error) {
-      setShowConfirmPopup(false);
       console.error("Error deleting post:", error);
-     
-      showToast("Failed to delete post.","error")
+      setShowConfirmPopup(false);
+      showToast("Failed to delete post.", "error");
     }
   };
 
@@ -63,8 +71,12 @@ const AllPosts = () => {
       headerName: "Images",
       width: 120,
       renderCell: (params) => (
-        <div className="relative flex flex-row justify-around items-center h-full">
-          <img src={params.row.image[0]} alt="" className="h-4 w-4 object-cover" />
+        <div className=" m-w-full flex flex-row  h-full  justify-center items-center">
+          <img
+            src={params.row.images?.[0] || "https://via.placeholder.com/50"}
+            alt=""
+            className="h-8 w-8 absolute object-cover hover:h-auto  hover:w-40 hover:z-50"
+          />
         </div>
       ),
     },
@@ -79,7 +91,7 @@ const AllPosts = () => {
         </div>
       ),
     },
-    { field: "createdDate", headerName: "Created Date", width: 140 },
+    { field: "createdAt", headerName: "Created Date", width: 140 },
     {
       field: "action",
       headerName: "Action",
@@ -92,14 +104,14 @@ const AllPosts = () => {
               <FaTrash
                 size={18}
                 color="red"
-                onClick={() => openConfirmPopup(params.row.id)}
+                onClick={() => openConfirmPopup(params.row._id)}
               />
               <span className="absolute hidden right-0 text-white p-2 rounded-sm text-sm">
                 Delete
               </span>
             </div>
             <Link
-              to={`./${params.row.id}`}
+              to={`./${params.row._id}`}
               className="absolute text-blue-600 hover:text-white flex-row-reverse right-0 hover:w-full hover:z-10 action flex items-center gap-3 hover:bg-black/80 py-2 flex-1 px-1 transition-all ease-in-out duration-75"
             >
               <IoEye size={22} />
@@ -117,7 +129,7 @@ const AllPosts = () => {
     <div className="relative flex flex-1 h-full max-w-full p-2 py-3 bg-white">
       <CustomizedTable
         columns={columns}
-        rows={data}
+        rows={posts}
         loading={loading}
         add={"post"}
         ButtonOne={true}
@@ -125,10 +137,12 @@ const AllPosts = () => {
 
       {/* Confirmation Popup */}
       {showConfirmPopup && (
-    
-        <DeleteConfirmation onCancel={() => setShowConfirmPopup(false)} onDelete={() => handleDeletePost(selectedPostId) } message={"  Are you sure you want to delete this post?"}/>
+        <DeleteConfirmation
+          onCancel={() => setShowConfirmPopup(false)}
+          onDelete={() => handleDeletePost(selectedPostId)}
+          message={"Are you sure you want to delete this post?"}
+        />
       )}
-    
     </div>
   );
 };

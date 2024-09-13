@@ -83,7 +83,7 @@ const Members = ({ params }) => {
               </span>
             </div>
             <Link
-              to={`./${params.row.unique_id}`}
+              to={`../members/view/${params.row.unique_id}`}
               className="absolute text-blue-600 hover:text-white flex-row-reverse right-0 hover:w-full hover:z-10 action flex items-center gap-3 hover:bg-black/80 py-2 flex-1 px-1 transition-all ease-in-out duration-75"
             >
               <IoEye size={22} />

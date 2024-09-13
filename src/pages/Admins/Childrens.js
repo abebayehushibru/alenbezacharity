@@ -5,10 +5,16 @@ import { FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
 import { Link } from "react-router-dom";
+import DeleteConfirmation from "../../components/Delete";
+import { useToast } from "../../context/ToastContext";
 
 const AllChildren = ({ params }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+ 
+  const {showToast}=useToast();
+  const [selectedChild, setSelectedChild] = useState(null);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Track the visibility of the confirmation popup
 
   useEffect(() => {
     
@@ -38,10 +44,7 @@ const AllChildren = ({ params }) => {
       });
   }, []);
 
-  const handleDeleteRow = (id) => {
-    // Logic to delete a row (child) based on ID
-    console.log("Delete child with ID:", id);
-  };
+  
 
   const columns = [
     {
@@ -62,15 +65,17 @@ const AllChildren = ({ params }) => {
       resizable: false,
       sortable: false,
       renderCell: (params) => {
-        const handleDelete = () => {
-          handleDeleteRow(params.row.id);
-        };
+       
 
         return (
           <div className="relative flex flex-row justify-around items-center h-full">
             <div className="absolute hover:z-10 left-0 hover:w-full action flex items-center gap-3 hover:bg-black/80 py-2 flex-1 px-1 transition-all ease-in-out duration-75">
-              <FaTrash size={18} color="red" onClick={handleDelete} />
-              <span className="absolute hidden right-0 text-white p-2 rounded-sm text-sm">
+            <FaTrash
+                size={18}
+                color="red"
+                onClick={() => openConfirmPopup(params.row.id)}
+              />
+               <span className="absolute hidden right-0 text-white p-2 rounded-sm text-sm">
                 Delete
               </span>
             </div>
@@ -85,10 +90,37 @@ const AllChildren = ({ params }) => {
       },
     },
   ];
-
+  const openConfirmPopup = (id) => {
+    setSelectedChild(id);
+    setShowConfirmPopup(true);
+  };
+  const handleRemoveChild = async (id) => {
+    try {
+      setLoading(true);
+      // Perform the deletion using axios
+      await axios.delete(`${ABC_BACKEND_API_URL}/child/delete/${id}`);
+      // Update state after deletion
+      setData(data.filter((dt) => dt.id !== id));
+      setShowConfirmPopup(false); // Hide popup after successful deletion
+      showToast("Child removed successfully.","success")
+      setShowConfirmPopup(false);
+      setLoading(false);
+     
+    } catch (error) {
+      setShowConfirmPopup(false);
+      setLoading(false);
+      console.error("Error deleting child:", error);
+     
+      showToast("Failed to delete child.","error")
+    }
+  };
   return (
     <div className="relative flex flex-1 h-full max-w-full p-2 py-3 bg-white">
       <CustomizedTable columns={columns} rows={data} loading={loading}  add={"child"}  ButtonOne={true} />
+      {showConfirmPopup && (
+    
+    <DeleteConfirmation onCancel={() => setShowConfirmPopup(false)} onDelete={() => handleRemoveChild(selectedChild) } message={"  Are you sure you want to remove  thi child?"}/>
+  )}
     </div>
   );
 };

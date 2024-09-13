@@ -23,7 +23,8 @@ const AllDeletedMembers = () => {
       try {
         const response = await axios.get(`${ABC_BACKEND_API_URL}/users/all`);
         const formattedUsers = response.data.filter(user => user.role === "banned");
-        console.log(response.data.reverse());
+       console.log(formattedUsers);
+       
         setData(formattedUsers);
       } catch (e) {
         console.error(e);
@@ -72,12 +73,13 @@ const AllDeletedMembers = () => {
       sortable: false,
       renderCell: (params) => {
         return (
-          <div className="relative flex flex-row justify-around items-center h-full">
-            <div className="absolute hover:z-10 left-0 hover:w-full action flex items-center gap-3 hover:bg-black/80 py-2 flex-1 px-1 transition-all ease-in-out duration-75">
+          <div className="relative flex flex-row justify-around items-center h-full cursor-pointer">
+            <div className="absolute hover:z-10 left-0 hover:w-full action flex items-center gap-3 hover:bg-black/80 py-2 flex-1 px-1 transition-all ease-in-out duration-75"
+            onClick={() => openConfirmPopup(params.row.id)}>
               <FaTrash
                 size={18}
                 color="red"
-                onClick={() => openConfirmPopup(params.row.id)}
+                
               />
               <span className="absolute hidden right-0 text-white p-2 rounded-sm text-sm">
               Reinstate
