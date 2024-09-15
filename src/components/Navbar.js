@@ -7,9 +7,10 @@ import HoverIcon from "./HoverIcon";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import avatar from "../asserts/images/avatar.png";
+import { usePopup } from "../context/popUpContext";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, logout } = useAuth(); // Get user and logout from AuthContext
+  const { user, logout,requireRole } = useAuth(); // Get user and logout from AuthContext
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -58,7 +59,7 @@ const Greeting = ({ user }) => {
     );
 };
 
-
+const{showPopup}=usePopup() 
 
 
   return (
@@ -169,20 +170,24 @@ const Greeting = ({ user }) => {
                   </li>
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => alert("Edit Profile clicked")}
+                    onClick={() => {setIsDropdownOpen(false);
+                      showPopup("edit-profile")}}
                   >
                     Edit Profile
                   </li>
-                  {user?.role==="admin" || user?.id==="ABC/0013/24"&& <li
+                  {requireRole("superadmin","Finance-controller","Content-creator")&& <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={handleLogout}
+                 
                   >
                     <Link to="/admin"> Switch to admin</Link>
                    
                   </li>}
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={handleLogout}
+                    onClick={()=>{setIsDropdownOpen(false);
+                      handleLogout();
+
+                    }}
                   >
                     Logout
                   </li>
@@ -275,7 +280,7 @@ const Greeting = ({ user }) => {
                   </li>
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => alert("Edit Profile clicked")}
+                    onClick={() => showPopup("edit-profile")}
                   >
                     Edit Profile
                   </li>

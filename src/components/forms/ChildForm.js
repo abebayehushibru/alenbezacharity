@@ -4,9 +4,11 @@ import axios from "axios";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
 import { useToast } from "../../context/ToastContext";
 import CustomLoadingButton from "../controls/CustomButton";
+import { useAuth } from "../../context/AuthContext";
 
 const AddChild = () => {
 const { showToast  } = useToast();
+const {user}=useAuth()
 const [isSaving,setIsSaving]=useState()
   // State for form data
   const [formData, setFormData] = useState({
@@ -58,7 +60,9 @@ const [isSaving,setIsSaving]=useState()
     if (validateForm()) {
       try {
       setIsSaving(true)
-       await axios.post(ABC_BACKEND_API_URL + "/child/add", formData);
+       await axios.post(ABC_BACKEND_API_URL + "/child/add", {...formData},{headers: {
+        Authorization: `Bearer ${user.token}` // Pass the token in the Authorization header
+      }});
         // Reset the form after successful submission
         setFormData({
           firstName: "",

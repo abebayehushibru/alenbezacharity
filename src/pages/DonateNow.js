@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { usePopup } from "../context/popUpContext";
+import React, {  useState } from "react";
+
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { ABC_BACKEND_API_URL } from "../configf/config";
@@ -28,45 +28,14 @@ const intialfrom = {
   materialName: "",
 };
 const DonateNow = () => {
-  const { showPopup } = usePopup();
+  
   const { user } = useAuth();
   const [errors, setErrors] = useState({});
   const [searchedUser, setSearchedUser] = useState({});
   const [formData, setFormData] = useState(intialfrom);
-  // Sample data for child names and corresponding families
-  const [childrenList, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    
-    axios
-      .get(ABC_BACKEND_API_URL + "/child") // Update the URL to match your children API endpoint
-      .then((response) => {
-        console.log(response.data);
-        
-        const formattedChildren = response.data.map((child,index) => ({
-        
-          id: child._id, // Assuming MongoDB ObjectId is used
-          name: `${child.firstName} ${child.lastName}`, // Combine first and last name for display
-          nickName: child.nickName || "-", // Display "-" if no nickname
-          grade: child.grade,
-          enteryYear:child.enteryYear,
-           family: `Family of ${child.firstName}`
-        }));
 
-        setData(formattedChildren || []);
-       
-      })
-      .catch((e) => {
-        console.error(e);
-        
-      });
-  }, []);
-  // const childrenList = [
-  //   { id: 1, name: "Child One", family: "Family A" },
-  //   { id: 2, name: "Child Two", family: "Family B" },
-  //   { id: 3, name: "Child Three", family: "Family C" },
-  // ];
+
 
   const validateInputs = () => {
     const newErrors = {};
@@ -88,17 +57,17 @@ const DonateNow = () => {
       }
     }
     if (formData.donationType === "gift") {
-      if (formData.firstname == "") {
+      if (formData.firstname.trim() === "") {
         newErrors.firstname = "Please enter first name";
-      } else if (!nameRegex.test(formData.firstname)) {
+      } else if (!nameRegex.test(formData.firstname.trim())) {
         newErrors.firstname = "First name must be character only";
       }
-      if (formData.lastname == "") {
+      if (formData.lastname.trim() === "") {
         newErrors.lastname = "Please enter last name";
-      } else if (!nameRegex.test(formData.lastname)) {
+      } else if (!nameRegex.test(formData.lastname.trim())) {
         newErrors.lastname = "Last name must be character only";
       }
-      if (formData.phonenumber == "") {
+      if (formData.phonenumber.trim() === "") {
         newErrors.phonenumber = "Please enter phone number";
       } else if (!phoneRegex.test(formData.phonenumber)) {
         newErrors.phonenumber = "Enter correct phone number";
@@ -122,75 +91,9 @@ const DonateNow = () => {
 
     return Object.keys(newErrors).length === 0;
   };
-  const handleFindUser = async (event) => {
-    setErrors({ memberId: "" });
-    event.preventDefault();
-    if (formData.memberId) {
-      try {
-        const response = await axios.post(ABC_BACKEND_API_URL+ "/users/findUserById",
-          { customId: formData.memberId }
-        );
 
-        setSearchedUser(response.data.user);
-      } catch (error) {
-        setSearchedUser(null);
-        setErrors({ memberId: "An error occurred while fetching the user." });
-        if (error.response && error.response.data && error.response.data.message) {
-          setErrors({ memberId: error.response.data.message})
-          console.error('Error logging user:', error.response.data.message); // Display backend message
-        } else {
-          setErrors({ memberId: error.message})
-          console.error('Unknown error:', error.message); // Fallback for unknown errors
-        }
-      
-        
-      }
-    } else {
-      setErrors({ memberId: "Please Enter member Id" });
-    }
-  };
 
-  const handleProceedToPayment = async (paymentMethod) => {
-   
-    if (validateInputs()) {
-      try {
-        console.log(formData.donationType);
-        const path= formData.donationType==="monthly"?'/users/monthlydonation':'/users/process'
-      console.log(path);
-      let datas={}
-      if (formData.donationType==="monthly") {
-        
-        if (formData.donor==="others") {
-          datas={...searchedUser,amount:formData.amount,paymentMethod};
-          
-        }
-        else{
-  
-          datas={...user,amount:formData.amount,paymentMethod}
-        }
-      }
-      else{
-        datas={...formData,paymentMethod}
-      }
-        let response = await axios.post(ABC_BACKEND_API_URL+path, datas);
-     
-     window.location.href=response.data.paymentLink.checkout_url
-       console.log(response.data);
-  
-        
-      } catch (error) {
-  //  setErrors({backenderror:error.data.message})
-     if (error.response && error.response.data && error.response.data.message) {
-    setErrors({backenderror:error.response.data.message})
-   console.error('Error  user d :', error.response.data.message); // Display backend message
-    } else {
-     setErrors({backenderror:error.message})
-    console.error('Unknown error:', error.message); // Fallback for unknown errors
-    }
-      }
-      console.log("Proceeding to payment");
-    }
-  };
+ 
 
   const handleInputFocus = (field) => {
     setErrors((prevErrors) => ({ ...prevErrors, [field]: "" }));
@@ -200,7 +103,7 @@ const DonateNow = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg my-4 sm:my-14">
+    <div className="max-w-md sm:min-w-4xl w-full mx-auto p-6  shadow-lg rounded-lg my-4 sm:my-14">
       <h1 className="text-2xl font-bold mb-4 text-center">Make a Donation</h1>
 
       {/* Donation Type Selection */}
@@ -236,7 +139,7 @@ const DonateNow = () => {
 
       {/* Input Fields for Gift */}
       {formData.donationType === "gift" && (
-       <OneTimeGiftForm onSubmit={()=>handleProceedToPayment("Chapa")} childrenList={childrenList} />
+       <OneTimeGiftForm  />
       )}
        {errors.backenderror && (
                 <p className="text-red-500 mb-4">{errors.backenderror}</p>

@@ -24,6 +24,8 @@ import MemberDetailPage from "./pages/Admins/MemberDetailPage";
 import AllPosts from "./pages/Admins/Post";
 import AdminPostDetail from "./pages/Admins/AdminPostDetail";
 import AllDeletedMembers from "./pages/Admins/AllDeletedMember";
+import Gifts from "./pages/Admins/Gifts";
+import GiftDetail from "./pages/Admins/GiftDetail";
 
 export const  AppContent=()=> {
     const location = useLocation();
@@ -63,6 +65,8 @@ useEffect(() => {
             <Route path="members/admins/:id" element={<MemberDetailPage />} />
             <Route path="members/deleted" element={<AllDeletedMembers />} />
             <Route path="members/deleted/:id" element={<MemberDetailPage />} />
+            <Route path="donations/gifts" element={<Gifts />} />
+            <Route path="donations/gifts/:id" element={<GiftDetail />} />
             <Route path="posts" element={<AllPosts />} />
             <Route path="posts/:id" element={<AdminPostDetail />} />
             <Route path="childrens" element={<AllChildren />}/>

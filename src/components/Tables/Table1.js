@@ -9,19 +9,16 @@ function CustomToolbar() {
     </GridToolbarContainer>
   );
 }
-const  Datatable=({rows,columns,loading,ButtonOne,add,addTwo,ButtonTwo})=> {
- const {smallPopupVisible,showSmallPopup}=usePopup()
+const  Datatable=({rows,columns,loading,ButtonOne,add,addTwo,ButtonTwo,OtherComponent})=> {
+ const {showSmallPopup}=usePopup()
 
-  const handleAddData2 = () => {
-    // Your logic for the second add data action
-    console.log("Add Data 2 Button Clicked");
-  };
 
   return (
     <div className="flex flex-1 flex-col" style={{ height: "auto" }}>
       {/* Buttons for adding data */}
-      <div className="flex mb-4 gap-4">
-       {ButtonOne && <Button
+      <div className="flex mb-4 gap-4 ">
+     <div className='flex gap-4 flex-1'>
+     {ButtonOne && <Button
           variant="contained"
           
           onClick={()=>{
@@ -41,6 +38,10 @@ const  Datatable=({rows,columns,loading,ButtonOne,add,addTwo,ButtonTwo})=> {
         >
           Add  {addTwo}
         </Button>}
+      </div> 
+      <div className='flex min-w-1/2'>
+      {OtherComponent&&<OtherComponent/>}
+      </div>
       </div>
 
       {/* Data Grid with Export functionality */}

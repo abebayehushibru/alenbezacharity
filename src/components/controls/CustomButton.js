@@ -1,10 +1,10 @@
 import React from 'react';
 
 // CustomButton Component
-const CustomLoadingButton = ({ action, isLoading, buttonText = "Sign In", loadingText = "Signing In..." ,type="button"}) => {
+const CustomLoadingButton = ({ action, isLoading, buttonText = "Sign In", loadingText = "Signing In..." ,type="button",className=""}) => {
   return isLoading ? (
     <div
-      className="w-full bg-blue-400 text-white py-2 rounded-md flex items-center justify-center gap-2 transition duration-300"
+      className={`${className||"bg-blue-400  hover:bg-blue-600"} w-full bg-blue-400 text-white py-2 rounded-md flex items-center justify-center gap-2 transition duration-300`}
       style={{ height: '40px' }}
     >
       {/* Spinner */}
@@ -15,7 +15,7 @@ const CustomLoadingButton = ({ action, isLoading, buttonText = "Sign In", loadin
   ) : (
     <button
       type={type}    
-        className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+        className={`${className||"bg-blue-400  hover:bg-blue-600"} w-full  text-white py-2 rounded-md  transition duration-300`}
       onClick={action}
     >
       {buttonText}

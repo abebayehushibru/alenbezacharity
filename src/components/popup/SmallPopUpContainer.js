@@ -6,6 +6,7 @@ import AddMember from '../forms/addMember';
 import AddChild from '../forms/ChildForm';
 import AddAdmin from '../forms/AddAdmin';
 import PostForm from '../forms/postForm';
+import OneTimeGiftForm from '../forms/OneTimeGiftForm';
 
 const SmallPopUpContainer = () => {
   const { smallPopupContent, hideSmallPopup, smallPopupVisible } = usePopup();
@@ -24,7 +25,7 @@ const h=()=>{
         {smallPopupContent === 'child' && <AddChild />}
         {smallPopupContent === 'admin' && <AddAdmin />}
         {smallPopupContent ==='post' && <PostForm />}
-        
+        {smallPopupContent ==='gift' && <OneTimeGiftForm />}
         <button
           className='absolute right-4 top-4 hover:text-blue-700'
           onClick={()=>h()}

@@ -98,10 +98,10 @@ const PostDetail = () => {
   return (
     <div className="flex flex-col sm:flex-row flex-wrap p-4 sm:px-16 sm:py-16 gap-10">
       <div className="sm:w-[70%] w-full flex flex-col gap-5">
-        <div className="relative w-full h-[350px] sm:h-[550px] ">
+        <div className="relative w-full h-[350px] sm:h-[550px] bg-black ">
           <img
             src={ post.images[currentImageIndex]}
-            className="relative w-full rounded-md object-cover h-full"
+            className="relative w-full rounded-md object-contain  h-full"
             alt="Post Detail"
           />
           {post.images.length > 1 && (

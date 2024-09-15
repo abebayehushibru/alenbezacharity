@@ -19,7 +19,7 @@ const PopUpContainer = () => {
          
             {type==="sign-in"&&<SignInForm />}
             {type==="change-pwd"&&<ChangePasswordForm/> }
-            {type==="edit-pwd"&&<EditProfileForm/>}
+            {type==="edit-profile"&&<EditProfileForm/>}
             {type==="sign-up"&&<SignUpForm/>}
             <button className=' absolute right-4 top-4  ' onClick={()=>hidePopup()}> <IoClose size={25} /> </button>
         </div>}
