@@ -44,12 +44,7 @@ const giftSchema = new mongoose.Schema({
       return this.typeOfGift === 'money';
     },
   },
-  paymentMethod: {
-    type: String,
-    required: function() {
-      return this.typeOfGift === 'money';
-    },
-  },
+ 
   giftRecipient: {
     type: String,
     enum: ['charity', 'child', 'childFamily'],
@@ -61,6 +56,11 @@ const giftSchema = new mongoose.Schema({
       return this.giftRecipient === 'child' || this.giftRecipient === 'childFamily';
     },
   },
+  status: {
+    type: String,
+    required: false,
+    default:"pending"
+  },
   transactionId: {
     type: String,
     required: false, // Optional; add after payment is successful
@@ -70,6 +70,6 @@ const giftSchema = new mongoose.Schema({
 });
 
 // Create the model
-const Gift = mongoose.model('Gift', giftSchema);
+const Gifts = mongoose.model('Gifts', giftSchema);
 
-export default Gift;
+export default Gifts;

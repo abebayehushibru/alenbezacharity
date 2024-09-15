@@ -47,7 +47,7 @@ export const createPost = async (req, res) => {
   }
 };
 // Controller to get all posts
-export const getPosts = async (req, res) => {
+export const getAllPosts = async (req, res) => {
   try {
     // Fetch all posts from the database
     const posts = await Post.find().sort({ createdAt: -1 }); // Sort by newest first if you have a createdAt field
@@ -59,7 +59,35 @@ export const getPosts = async (req, res) => {
     res.status(500).json({ message: 'Error fetching posts' });
   }
 };
+export const getPosts= async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const limit = parseInt(req.query.limit) || 6; // Default to 10 posts per page if not provided
 
+    // Calculate the starting index
+    const startIndex = (page - 1) * limit;
+
+    // Fetch posts with pagination
+    const posts = await Post.find()
+    .skip(startIndex)   // Skip the posts based on pagination
+    .limit(limit)       // Limit the number of posts returned per page
+    .sort({ createdAt: -1 }); // Sort by date, adjust as needed
+
+    // Get total number of posts
+    const totalPosts = await Post.countDocuments();
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    res.status(200).json({
+      posts,
+      totalPages,
+      currentPage: page,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch posts', error: error.message });
+  }
+}
 
 // Controller to update a post by ID
 export const updatePost = async (req, res) => {

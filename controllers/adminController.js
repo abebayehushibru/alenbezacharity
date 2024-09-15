@@ -1,5 +1,4 @@
 
-import MonthlyPayment from '../models/MonthlyPayment.js';
 import User, { Gift } from '../models/Users.js';
 
 

@@ -2,11 +2,12 @@ import express from 'express';
 // Update the path as necessary
 import multer from 'multer';
 
-import { createComment, createPost, deleteComment, deletePost, getPostById, getPosts, updatePost } from '../controllers/postController.js';
+import { createComment, createPost, deleteComment, deletePost, getAllPosts, getPostById, getPosts, updatePost } from '../controllers/postController.js';
 
 const postRoutes = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
-postRoutes.get('/',  getPosts);
+postRoutes.get('/',  getAllPosts);
+postRoutes.get('/bypage',  getPosts);
 postRoutes.get('/:id', getPostById)
 postRoutes.post('/add', upload.array('images'), createPost);
 postRoutes.delete('/delete/:id', deletePost);

@@ -4,8 +4,10 @@ import User, { Gift } from '../models/Users.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { initiateChapaPayment } from '../services/paymenyServices.js';
-import MonthlyPayment from '../models/MonthlyPayment.js';
+
 import { createTransaction } from '../utils/functions.js';
+import MonthlyPaymentHistory from '../models/MonthlPaymentHistory.js';
+import getCurrentEthiopianYear from '../utils/ethiopianYear.js';
 
 // Register User
 export const createUser = async (req, res) => {
@@ -41,14 +43,14 @@ export const createUser = async (req, res) => {
       monthlyamount,
       createdate,
     });
-console.log(req.body);
+
 
    await newUser.save();
   // Check if user exists
   const user = await User.findOne({ phonenumber });
     // Generate JWT Token
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '30d', // Set token expiration to 30 days
     });
 
  
@@ -78,7 +80,7 @@ export const loginUser = async (req, res) => {
 
     // Generate JWT Token
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '30d', // Set token expiration to 30 days
     });
 
     res.status(200).json({ message: 'Login successful', user: {token,firstname:user.firstname,lastname:user.lastname,email:user.firstname,phonenumber:user.phonenumber,role:user.role,id:user.customId},success:true });
@@ -88,26 +90,33 @@ export const loginUser = async (req, res) => {
 };
 // Route to get all users
 export const getAllUsers = async (req, res) => {
+  const year = req.query.selectedYear || getCurrentEthiopianYear();
   try {
-    console.log("Fetching users...");
-
-    // Fetch users with selected fields and concatenate firstname and lastname as 'name'
-    // const users = await User.find().lean(); // `.lean()` to get plain JavaScript objects instead of Mongoose documents
-    const users = await User.find(); // Fetch all users
-    // res.status(200).json(users);
-    // Concatenate firstname and lastname to form 'name'
-    const formattedUsers = await users.map(user => ({
-      name: `${user.firstname} ${user.lastname}`,
-      email: user.email,
-      role: user.role,
-      id: user.customId,
-      unique_id: user.id,
-      phonenumber: user.phonenumber,
-      monthlyamount:user.monthlyamount
+ 
+     const users = await User.find(); // Fetch all users
+   
+     const formattedUsers = await Promise.all(users.map(async (user) => {
+      // Find all monthly payments for the user for the given year
+      const monthlyPayments = await MonthlyPaymentHistory.find({ 
+        customId: user.customId, 
+        year: year 
+      });
+      const totalAmount = monthlyPayments[0]?.amount|| 0;
+  
+      return {
+        name: `${user.firstname} ${user.lastname}`,
+        email: user.email,
+        role: user.role,
+        id: user.customId,
+        unique_id: user.id,
+        phonenumber: user.phonenumber,
+        monthlyamount: user.monthlyamount,
+         status : Math.floor(totalAmount / user.monthlyamount) // Include the total amount from monthly payments
+      };
     }));
 
    
-console.log(formattedUsers);
+
 
     res.status(200).json(formattedUsers); // Send the formatted users as a JSON response
   } catch (error) {
@@ -163,6 +172,69 @@ export const getMemeberById = async (req, res) => {
     res.status(500).json({ message: 'Error fetching user details', error: error.message });
   }
 };
+export const getProfile =async (req, res) => {
+
+  try {
+    const user = await User.findOne({ _id: req.user.id }).select(
+      'firstname lastname email phonenumber monthlyamount customId createdate address role'
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const monthlyPayments = await MonthlyPaymentHistory.find({ customId: user.customId, year:getCurrentEthiopianYear()});
+    let canEdit= false
+ console.log(monthlyPayments);
+ 
+    if(!monthlyPayments.length>0){
+      canEdit= true;
+      console.log("monthlyPayments");
+    }
+    else if(monthlyPayments[0].amount/monthlyPayments[0].monthlyAmount >=12|| monthlyPayments[0].amount/monthlyPayments[0].monthlyAmount ==0){
+      canEdit= true
+      console.log("monthlyPayments 2");
+    }
+ 
+    res.json({user,canEdit});
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const updateProfile =async (req, res) => {
+  try {
+    // Extract user ID from token
+    const userId = req.user.id;
+
+    // Extract fields from request body
+    const { firstname, lastname, phonenumber, email, monthlyamount, address } = req.body;
+
+    // Validate incoming data (you can add more specific validations)
+    if (!firstname || !lastname || !phonenumber || !email || !monthlyamount) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    // Find the user by ID and update
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { firstname, lastname, phonenumber, email, monthlyamount, address },
+      { new: true } // Return the updated user
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Send back the updated user data
+    res.json({ message: 'Profile updated successfully.', user: updatedUser });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Server error, please try again later.' });
+  }
+}
+
 
 
 
