@@ -136,24 +136,7 @@ const Home = () => {
                     >
                       All Gifts
                     </Link>
-                    <Link
-                      to="./donations/material"
-                      className="block p-2 pl-3 rounded hover:bg-gray-700"
-                    >
-                      Material Gifts
-                    </Link>
-                    <Link
-                      to="/donations/material"
-                      className="block p-2 pl-3 rounded hover:bg-gray-700"
-                    >
-                      Money Gifts
-                    </Link>
-                    <Link
-                      to="/donations/completed"
-                      className="block p-2 pl-3 rounded hover:bg-gray-700"
-                    >
-                      Completed Gifts
-                    </Link>
+                    
                   </div>
                 )}
               </div>
