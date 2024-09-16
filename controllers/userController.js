@@ -8,6 +8,8 @@ import { initiateChapaPayment } from '../services/paymenyServices.js';
 import { createTransaction } from '../utils/functions.js';
 import MonthlyPaymentHistory from '../models/MonthlPaymentHistory.js';
 import getCurrentEthiopianYear from '../utils/ethiopianYear.js';
+import { generateHtmlTemplate } from '../utils/emailHtmls.js';
+import sendMail from '../utils/sendMail.js';
 
 // Register User
 export const createUser = async (req, res) => {
@@ -52,8 +54,19 @@ export const createUser = async (req, res) => {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: '30d', // Set token expiration to 30 days
     });
-
- 
+    const message=`<p>Full  Name  : ${firstname} ${lastname}</p>
+                   <p>Phone Number  : ${phonenumber} </p>
+                   <p>Email  : ${email}</p>
+                   <p>Address : ${address} </p>
+                   <p>Monthly amount : ${monthlyamount} </p>
+                 `
+    const mailOptions = {
+      from: email, // The sender's email
+      to: "abeaba64@gmail.com", // Your charity email
+      subject: `New member registerd ${firstname}  ${lastname}`,
+      html: generateHtmlTemplate("template2",{from_name:firstname,from_email:email,message,phonenumber}),
+    };
+    await sendMail(mailOptions);
     res.status(200).json({ message: 'Registerd successful', user: {token,firstname:user.firstname,lastname:user.lastname,email:user.firstname,phonenumber:user.phonenumber,role:"Member",id:user.customId},success:true });
   } catch (error) {
     res.status(400).json({ message: error.message ,success:false});
@@ -235,7 +248,28 @@ export const updateProfile =async (req, res) => {
   }
 }
 
+export const sendContactEmail = async (req, res) => {
+  const { name, email, phone, userType, message } = req.body;
 
+  if (!name || !email || !phone || !userType || !message) {
+    return res.status(400).json({ error: 'All fields are required.' });
+  }
+
+  const mailOptions = {
+    from: email, // The sender's email
+    to: "abeaba64@gmail.com", // Your charity email
+    subject: `New Contact Message from ${name} and User Type  ${userType}`,
+    html: generateHtmlTemplate("template1",{from_name:name,from_email:email,message}),
+  };
+
+  try {
+    // Send the email
+await sendMail(mailOptions);
+    res.status(200).json({ message: 'Your message has been sent successfully!' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to send the message.' });
+  }
+};
 
 
 
