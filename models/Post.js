@@ -28,5 +28,5 @@ const postSchema = new Schema({
     default: Date.now,
   },
 });
-
-export default model('Post', postSchema);
+const Post= model('Post', postSchema);
+export default  Post
