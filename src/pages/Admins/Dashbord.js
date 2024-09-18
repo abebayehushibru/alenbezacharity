@@ -27,7 +27,7 @@ const Dashbord = () => {
 console.log(e);
 
   });
-    }, []);
+    }, [hidePopup, showPopup]);
   return (
     <div className="relative flex h-full flex-1 flex-col px-4  mt-1 py-2 bg-white gap-1  ">
       <h2 className=" text-lg font-bold"> Dashboad</h2>
@@ -40,6 +40,7 @@ console.log(e);
             header={"All members"}
             percentile={Number(data?.currentMonthStats.members.percentage)}
             color={"green"}
+            link={"members/all"}
           />
           <TopRowCard
             colo={"red"}
@@ -48,6 +49,7 @@ console.log(e);
             header={"All Posts"}
             percentile={Number(data?.currentMonthStats.posts.percentage)}
             color={"green"}
+            link={"posts"}
           />
           <TopRowCard
             colo={"red"}
@@ -56,13 +58,14 @@ console.log(e);
             header={"All Gifts"}
             percentile={Number(data?.currentMonthStats.gifts.percentage)}
             color={"green"}
+            link={"donations/gift"}
           />
         </div>
         {/* 2nd row  */}
         <div className="grid grid-cols-3 gap-4 ">
           {/* column  1*/}
           <div className=" col-span-2 bg-white shadow-lg px-4 rounded-md  ">
-            <TickPlacementBars />
+            <TickPlacementBars data={data?.transactionsByMonth} />
           </div>
           {/* column 2*/}
           <div className="overflow-hidden bg-white shadow-md rounded-md  py-4">
@@ -80,10 +83,11 @@ console.log(e);
                 see all
               </Link>
             </div>{" "}
-            <div>
-              <AdminRecentCard />
-              <AdminRecentCard />
-              <AdminRecentCard />
+            <div>{
+              data?.recentMonthlyPayments.map((item)=>(      <AdminRecentCard data={item} />))
+              }
+        
+            
             </div>
           </div>
           <div className=" flex flex-col overflow-hidden bg-white shadow-md rounded-md  p-4 gap-3">
@@ -97,9 +101,9 @@ console.log(e);
             </div>
 
             <div>
-              <AdminRecentCard />
-              <AdminRecentCard />
-              <AdminRecentCard />
+            {
+              data?.recentGifts.map((item)=>(      <AdminRecentCard data={item} />))
+              }
             </div>
           </div>
         </div>
