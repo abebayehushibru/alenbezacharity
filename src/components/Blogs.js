@@ -4,7 +4,7 @@ import SectionHeading from './SectionHeading';
 import PostCard from './Cards/PostCard';
 import { ABC_BACKEND_API_URL } from '../configf/config';
 import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
+
 import ShimmerPlaceholder from './Cards/ShimmerPlaceholder';
 
 const Blogs = () => {
