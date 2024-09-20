@@ -63,7 +63,7 @@ bot.on("contact", async (ctx) => {
 async function fetchPaymentHistory(ctx, phoneNumber) {
   try {
     // Make a request to the API using the phone number as a query parameter
-    const response = await axios.get('http://localhost:5000/donations/getMyDonationFormBot', {
+    const response = await axios.get('https://alenbezacharity.onrender.com/donations/getMyDonationFormBot', {
       params: { phoneNumber }  // Use params for query parameters
     });
 
