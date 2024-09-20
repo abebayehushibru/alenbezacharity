@@ -1,5 +1,5 @@
 import express from 'express';
-import { addMonthlyPayment, chapaCallbackHandler, getGiftById, getGifts, getMyDonationByUserId, processGift, processMonthlyPayment, updateGiftStatus } from '../controllers/donationController.js';
+import { addMonthlyPayment, chapaCallbackHandler, getGiftById, getGifts, getMyDonationByUserId, getMyDonationFormBot, processGift, processMonthlyPayment, updateGiftStatus } from '../controllers/donationController.js';
 
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
@@ -13,4 +13,5 @@ donationRoutes.post("/gifts/:id/status",authMiddleware,roleMiddleware(["Finance-
 donationRoutes.post('/addMonthlyDonation', authMiddleware,roleMiddleware(["Finance-controller","superadmin"]),addMonthlyPayment);
 donationRoutes.get('/getMyDonation', authMiddleware, getMyDonationByUserId);
 donationRoutes.get('/verify', chapaCallbackHandler);
+donationRoutes.get('/getMyDonationFormBot', getMyDonationFormBot);
 export default donationRoutes;

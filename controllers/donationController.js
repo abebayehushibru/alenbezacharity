@@ -332,6 +332,100 @@ export const getMyDonationByUserId = async (req, res) => {
     res.status(500).json({ message: 'Failed to retrieve payment history.' });
   }
 }
+export const getMyDonationFormBot = async (req, res) => {
+  try {
+    // Extract phoneNumber from request body and process it
+    let phoneNumber = req.body.phoneNumber;
+
+    // Take the last 9 digits of the phone number and prepend '0'
+    phoneNumber = '0' + phoneNumber.slice(-9);
+
+    // Validate that the phoneNumber is now 10 digits long
+    if (phoneNumber.length !== 10) {
+      return res.status(400).json({ message: 'Invalid phone number format. It must be 10 digits long.' });
+    }
+
+    // Fetch the user data by processed phone number
+    const user = await User.findOne({ phonenumber: phoneNumber });
+
+    // If no user found, respond with an error
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Fetch the monthly payment history for the given customId
+    const monthlyPayment = await MonthlyPaymentHistory.findOne({ customId: user.customId });
+
+    // Set amount and monthlyAmount, fallback to user's monthlyAmount if not available in monthlyPayment
+    const amount = monthlyPayment ? monthlyPayment.amount : 0;
+    const monthlyAmount = monthlyPayment?.monthlyAmount || user.monthlyamount; 
+
+    // Get the current Ethiopian month as a number (1 - 12)
+    const currentMonth = getCurrentEthiopianMonth();
+    const totalMonthsPaid = Math.floor(amount / monthlyAmount); // Calculate the number of months fully paid
+
+    // Define all the Ethiopian months
+    const ethiopianMonths = [
+      'መስከረም / September',
+      'ጥቅምት / October',
+      'ህዳር / November',
+      'ታኅሳስ / December',
+      'ጥር / January',
+      'የካቲት / February',
+      'መጋቢት / March',
+      'ሚያዝያ / April',
+      'ግንቦት / May',
+      'ሰኔ / June',
+      'ሐምሌ / July',
+      'ነሐሴ / August',
+    ];
+
+    // Create the response rows with statuses based on the amount and current month
+    const rows = ethiopianMonths.map((month, index) => {
+      const monthIndex = index + 1; // Month index from 1 to 12
+
+      let status;
+      if (monthIndex <= totalMonthsPaid) {
+        status = 'ተከፍሏል / Paid'; // Mark as Paid
+      } else if (monthIndex === currentMonth) {
+        status = 'አልተከፈለም / Unpaid'; // Mark as Unpaid for the current month
+      } else if (monthIndex > currentMonth) {
+        status = 'የሚከፈል / Pending'; // Mark as Pending for future months
+      } else {
+        status = 'አልተከፈለም / Unpaid'; // Unpaid for past unpaid months
+      }
+
+      return {
+        id: monthIndex,
+        month,
+        status,
+      };
+    });
+
+    // Determine the message based on current month and paid months
+    const info = { message: "", color: "" };
+    if (currentMonth <= totalMonthsPaid) {
+      info.message = 'Thank you for paying on time!.\n ወራዊ ክፍያዎን በጊዜ ስለ ከፈሉ እናመሰናለን!';
+      info.color = 'green';
+    } else {
+      info.message = 'Thank you for paying, and please pay ' + Math.floor(currentMonth - totalMonthsPaid) + ' unpaid months. \n ስለሚከፍሉ እናመሰግናለን፣ እባክዎን ያልተከፈሉትን የ' + Math.floor(currentMonth - totalMonthsPaid) + ' ወር ይክፈሉ።';
+      info.color = 'yellow';
+    }
+
+    // Prepare the final response with payment statuses and message
+    const response = {
+      paymentStatus: rows,
+      info,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Error fetching payment history:', error);
+    res.status(500).json({ message: 'Failed to retrieve payment history.' });
+  }
+};
+
+
 export const getGifts = async (req, res) => {
   const { typeOfGift, year, status } = req.query;
 
