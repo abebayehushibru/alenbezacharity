@@ -3,7 +3,7 @@ import { addMonthlyPayment, getGiftById, getGifts, getMyDonationByUserId, proces
 
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
-// Update the path as necessar
+
 const donationRoutes = express.Router();
 donationRoutes.post('donations/monthly', processMonthlyPayment);
 donationRoutes.post('/gifts', processGift);
