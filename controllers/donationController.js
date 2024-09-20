@@ -334,8 +334,9 @@ export const getMyDonationByUserId = async (req, res) => {
 }
 export const getMyDonationFormBot = async (req, res) => {
   try {
-    // Extract phoneNumber from request body and process it
-    let phoneNumber = req.body.phoneNumber;
+  
+    
+    let {phoneNumber} = req.query;
 
     // Take the last 9 digits of the phone number and prepend '0'
     phoneNumber = '0' + phoneNumber.slice(-9);
@@ -366,18 +367,19 @@ export const getMyDonationFormBot = async (req, res) => {
 
     // Define all the Ethiopian months
     const ethiopianMonths = [
-      'መስከረም / September',
-      'ጥቅምት / October',
-      'ህዳር / November',
-      'ታኅሳስ / December',
-      'ጥር / January',
-      'የካቲት / February',
-      'መጋቢት / March',
-      'ሚያዝያ / April',
-      'ግንቦት / May',
-      'ሰኔ / June',
-      'ሐምሌ / July',
-      'ነሐሴ / August',
+     
+      'መስከረም / September                      ',
+      'ጥቅምት / October                         ',
+      'ህዳር / November                          ',
+      'ታኅሳስ / December                         ',
+      'ጥር / January                            ',
+      'የካቲት / February                         ',
+      'መጋቢት / March                           ',
+      'ሚያዝያ / April                           ',
+      'ግንቦት / May                              ',
+      'ሰኔ / June                               ',
+      'ሐምሌ / July                             ',
+      'ነሐሴ / August                            ',
     ];
 
     // Create the response rows with statuses based on the amount and current month
@@ -386,11 +388,11 @@ export const getMyDonationFormBot = async (req, res) => {
 
       let status;
       if (monthIndex <= totalMonthsPaid) {
-        status = 'ተከፍሏል / Paid'; // Mark as Paid
+        status = 'ተከፍሏል / Paid  '; // Mark as Paid
       } else if (monthIndex === currentMonth) {
         status = 'አልተከፈለም / Unpaid'; // Mark as Unpaid for the current month
       } else if (monthIndex > currentMonth) {
-        status = 'የሚከፈል / Pending'; // Mark as Pending for future months
+        status = 'የሚከፈል / Pending  '; // Mark as Pending for future months
       } else {
         status = 'አልተከፈለም / Unpaid'; // Unpaid for past unpaid months
       }
@@ -416,6 +418,7 @@ export const getMyDonationFormBot = async (req, res) => {
     const response = {
       paymentStatus: rows,
       info,
+      userData:user
     };
 
     res.status(200).json(response);

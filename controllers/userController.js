@@ -273,11 +273,41 @@ export const updateProfile =async (req, res) => {
   }
 }
 
+export const updateProfileByAdmin =async (req, res) => {
+  try {
+    
+    // Extract fields from request body
+    const {_id ,firstname, lastname, phonenumber, email, monthlyamount, address } = req.body;
+
+    // Validate incoming data (you can add more specific validations)
+    if (!firstname || !lastname || !phonenumber || !email || !monthlyamount) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    // Find the user by ID and update
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      { firstname, lastname, phonenumber, email, monthlyamount, address },
+      { new: true } // Return the updated user
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Send back the updated user data
+    res.json({ message: 'Profile updated successfully.', user: updatedUser });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Server error, please try again later.' });
+  }
+}
+
 export const sendContactEmail = async (req, res) => {
   const { name, email, phone, userType, message } = req.body;
 
   if (!name || !email || !phone || !userType || !message) {
-    return res.status(400).json({ error: 'All fields are required.' });
+    return res.status(400).json({ message: 'All fields are required.' });
   }
 
   const mailOptions = {
