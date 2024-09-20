@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-    origin: 'hhttps://alenbezacharity.netlify.app', 
+    origin: 'https://alenbezacharity.netlify.app', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // Allows sending cookies or authorization headers
   }));

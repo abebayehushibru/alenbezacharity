@@ -1,8 +1,7 @@
 import { Chapa } from "chapa-nodejs";
 import axios from 'axios';
-const chapa = new Chapa({
-  secretKey: "CHASECK_TEST-Ol26cu3s2lNPUx5XO5gj6YqK5ldY0GAf",
-});
+const secretKey= "CHASECK_TEST-Ol26cu3s2lNPUx5XO5gj6YqK5ldY0GAf";
+
 export const initiateTelebirrPayment = async (gift) => {
   // Example: Make an API request to Telebirr to initiate payment
   try {
@@ -25,9 +24,6 @@ export const initiateTelebirrPayment = async (gift) => {
 };
 
 export const initiateChapaPayment = async (data) => {
-  console.log(data);
-
- 
 
   try {
 
@@ -37,19 +33,19 @@ export const initiateChapaPayment = async (data) => {
       currency: 'ETB',
       amount: data.amount, // Ensure amount is a string
       tx_ref: `${data.transactionId}-${data.customId}-${data.donationType}`,
-      callback_url: 'https://your-callback-url.com/', // Replace with your callback URL
+      callback_url: 'https://alenbezacharity.onrender.com/donations/verify', // Replace with your callback URL
       return_url: 'http://alenbezacharity.netlify.app/', // Replace with your return URL
       customization: {
         title: 'charity donation',
         description: 'Thanks for your gift',
       },
     };
-console.log(paymentData);
+
 
     // Configure Axios request headers
     const config = {
       headers: {
-        Authorization: `Bearer CHASECK_TEST-Ol26cu3s2lNPUx5XO5gj6YqK5ldY0GAf`, // Authorization header with Bearer token
+        Authorization: `Bearer `+secretKey, // Authorization header with Bearer token
         'Content-Type': 'application/json',
       },
     };
@@ -68,3 +64,24 @@ console.log(paymentData);
  
   }
 };
+
+export const  verifyTransaction = async (transactionId) => {
+  const options = {
+    method: 'GET',
+    url: `https://api.chapa.co/v1/transaction/verify/${transactionId}`,
+    headers: {
+      'Authorization': `Bearer `+secretKey,
+    }
+  };
+
+  try {
+    const response = await axios(options);
+   return response.data; // Handle the response data as needed
+  } catch (error) {
+
+    console.error('Error verifying transaction:', error.response ? error.response.data : error.message);
+    throw new Error('Verification failed');
+  }
+};
+
+

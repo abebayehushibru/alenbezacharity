@@ -1,29 +1,67 @@
 // controllers/paymentController.js
 import axios from "axios";
 import Transaction from "../models/Transaction.js"; // Ensure correct path to your model
-import { initiateChapaPayment } from "../services/paymenyServices.js";
+import { initiateChapaPayment, verifyTransaction } from "../services/paymenyServices.js";
 import User from "../models/Users.js";
 import getCurrentEthiopianYear, { getCurrentEthiopianMonth } from "../utils/ethiopianYear.js";
 import MonthlyPaymentHistory from "../models/MonthlPaymentHistory.js";
 import Gift from "../models/Gift.js";
 
-// Example Express.js handler for Chapa callback
+
+
+
 export const chapaCallbackHandler = async (req, res) => {
   try {
     // Extract tx_ref from the callback data
-    const { tx_ref, status } = req.body;
+    const { tx_ref } = req.body;
 
     // Split the tx_ref to get the transaction ID and customId
     const [transactionId, customId, donationType] = tx_ref.split("-");
 
-    // Check the payment status
-    if (status === "success") {
-      // Use customId for further processing, like updating the payment record
-      console.log(`Payment successful for customId: ${customId}`);
-      // Here, you can call your function to update payment records using the customId
-      // Example: await handleMonthlyPayment(customId, newAmount);
+    // Verify the payment status
+    const verifyResponse = await verifyTransaction(transactionId);
 
+    // Check if the verification was successful
+    if (verifyResponse.status === "success") {
+      const {
+        amount,
+        currency,
+        charge,
+        first_name,
+        last_name,
+        email,
+        created_at,
+        updated_at,
+      } = verifyResponse.data;
+
+      // Register the transaction in the database without checking by ID
+      await Transaction.create({
+        transactionId, // Register the transaction ID
+        amount, 
+        currency, 
+        charge,
+        name: `${first_name} ${last_name}`, 
+        email, 
+        paymentMethod: "Chapa",
+        status: 'completed',
+        isGift:donationType === "gift",
+
+       createdAt :created_at, 
+       updatedAt:updated_at, 
+      });
+      // If it's a gift, update the gift status
+      if (donationType === "gift") {
+        await Gift.findOneAndUpdate(
+          { transactionId }, // Find by transactionId
+          { status: 'completed' }, // Update status to completed
+          { new: true, upsert: true } // Create a new document if it doesn't exist
+        );
+        console.log(`Gift successful added`);
+      res.status(200).json({ message: "Gift successful added" });
+      }
+      console.log(`Payment successful for customId: ${customId}`);
       res.status(200).json({ message: "Payment successful", customId });
+      
     } else {
       res.status(400).json({ message: "Payment failed or incomplete" });
     }
@@ -32,7 +70,6 @@ export const chapaCallbackHandler = async (req, res) => {
     res.status(500).json({ message: "Error handling payment callback" });
   }
 };
-
 export const processGift = async (req, res) => {
   const {
     paymentMethod,
@@ -102,7 +139,6 @@ export const processMonthlyPayment = async (req, res) => {
   const { firstname, lastname, phonenumber, memberId, amount } = req.body;
   // Generate a unique transaction ID
   const transactionId = `TRX_${Date.now()}`;
-  console.log(req.body);
   // Validate customId format
   if (!/^ABC\/\d{4}\/\d{2}$/.test(memberId)) {
     return res
