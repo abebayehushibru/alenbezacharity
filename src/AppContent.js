@@ -54,7 +54,7 @@ useEffect(() => {
 
   return (
     <>
-      <div className="absolute top-0 max-w-[1360px] w-full mx-auto max-h-full overflow-y-scroll">
+      <div className="absolute top-0 max-w-[1360px] w-full mx-auto max-h-full overflow-y-scroll bg-white">
         {/* Conditionally render Navbar and Footer based on route */}
         {!isAdminRoute && <Navbar />}
 
