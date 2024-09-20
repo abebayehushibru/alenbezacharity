@@ -142,7 +142,7 @@ export const addMonthlyPayment = async (req, res) => {
   try {
     // Destructure data from the request body
     const { customId, amount, name, phonenumber } = req.body;
-console.log(customId);
+
 
     // Generate unique transaction ID
     const transactionId = `TRX_${Date.now()}`;
@@ -165,7 +165,7 @@ console.log(customId);
     } else {
        // Find the user by customId
     const user = await User.findOne({ customId });
-    console.log(user);
+  
     
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });

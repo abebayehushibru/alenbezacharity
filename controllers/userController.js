@@ -10,6 +10,8 @@ import MonthlyPaymentHistory from '../models/MonthlPaymentHistory.js';
 import getCurrentEthiopianYear from '../utils/ethiopianYear.js';
 import { generateHtmlTemplate } from '../utils/emailHtmls.js';
 import sendMail from '../utils/sendMail.js';
+import Transaction from '../models/Transaction.js';
+import Gifts from '../models/Gift.js';
 
 // Register User
 export const createUser = async (req, res) => {
@@ -52,7 +54,7 @@ export const createUser = async (req, res) => {
   const user = await User.findOne({ phonenumber });
     // Generate JWT Token
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: '30d', // Set token expiration to 30 days
+      expiresIn: '90d', // Set token expiration to 30 days
     });
     const message=`<p>Full  Name  : ${firstname} ${lastname}</p>
                    <p>Phone Number  : ${phonenumber} </p>
@@ -64,7 +66,7 @@ export const createUser = async (req, res) => {
       from: email, // The sender's email
       to: "abeaba64@gmail.com", // Your charity email
       subject: `New member registerd ${firstname}  ${lastname}`,
-      html: generateHtmlTemplate("template2",{from_name:firstname,from_email:email,message,phonenumber}),
+      html: generateHtmlTemplate("template1",{from_name:firstname,from_email:email,message,phonenumber}),
     };
     await sendMail(mailOptions);
     res.status(200).json({ message: 'Registerd successful', user: {token,firstname:user.firstname,lastname:user.lastname,email:user.firstname,phonenumber:user.phonenumber,role:"Member",id:user.customId},success:true });
@@ -93,7 +95,7 @@ export const loginUser = async (req, res) => {
 
     // Generate JWT Token
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: '30d', // Set token expiration to 30 days
+      expiresIn: '90d', // Set token expiration to 30 days
     });
 
     res.status(200).json({ message: 'Login successful', user: {token,firstname:user.firstname,lastname:user.lastname,email:user.firstname,phonenumber:user.phonenumber,role:user.role,id:user.customId},success:true });
@@ -180,7 +182,28 @@ export const getMemeberById = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(200).json(user);
+    const { phonenumber } = user;
+    // Get top 5 recent transactions for this user that are not gifts
+    const transactions = await Transaction.find({ phoneNumber:phonenumber, isGift: { $ne: true } ,status:"completed"})
+      .sort({ createdAt: -1 }) // Sort by most recent
+      .limit(5);
+
+             // Format the transaction results
+    const formattedTransactions = transactions.map((transaction) => ({
+      id: transaction._id,
+      name: `${user.firstname} ${user.lastname}`,
+      phoneNumber: transaction.phoneNumber,
+      amount: transaction.amount,
+      status: transaction.status,
+      date: transaction.createdAt,
+      typeOfGift: null, // Transactions are not gifts, so typeOfGift is null
+    }));
+
+   
+
+    // Merge and return the results and sort 
+    const results =formattedTransactions
+    res.status(200).json({user,donations:results});
   } catch (error) {
     res.status(500).json({ message: 'Error fetching user details', error: error.message });
   }
@@ -188,6 +211,8 @@ export const getMemeberById = async (req, res) => {
 export const getProfile =async (req, res) => {
 
   try {
+   
+    
     const user = await User.findOne({ _id: req.user.id }).select(
       'firstname lastname email phonenumber monthlyamount customId createdate address role'
     );
@@ -259,7 +284,7 @@ export const sendContactEmail = async (req, res) => {
     from: email, // The sender's email
     to: "abeaba64@gmail.com", // Your charity email
     subject: `New Contact Message from ${name} and User Type  ${userType}`,
-    html: generateHtmlTemplate("template1",{from_name:name,from_email:email,message}),
+    html: generateHtmlTemplate("template2",{from_name:name,from_email:email,message,phone}),
   };
 
   try {

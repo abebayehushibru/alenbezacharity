@@ -61,7 +61,7 @@ const getDashboardData = async (req, res) => {
       .limit(3);
       const recentMonthlyPayments = await Transaction.find({
         isGift: false,
-  
+   status:"completed"
       })
         .sort({ createdAt: -1 }) // Sort by latest first
         .limit(3);
@@ -107,6 +107,7 @@ const getDashboardData = async (req, res) => {
               $gte: startDate,
               $lte: endDate,
             },
+            status:"completed"
           },
         },
         {
@@ -219,5 +220,40 @@ const getCurrentGCMonth = () => {
   const date = new Date();
   return (date.getMonth() + 1).toString().padStart(2, '0'); // Returns month in MM format
 };
+const getTransactions =async (req, res) => {
+  try {
+    const { selectedYear, isGift, status, page = 1 } = req.query;
 
-export  {getDashboardData,updateUserRole};
+    const query = {};
+    
+    // Filter by year if selectedYear is provided
+    if (selectedYear) {
+      const yearStart = new Date(`${selectedYear}-01-01`);
+      const yearEnd = new Date(`${parseInt(selectedYear) + 1}-01-01`);
+      query.timestamp = { $gte: yearStart, $lt: yearEnd };
+    }
+    
+    // Filter by isGift if provided
+    if (isGift !== undefined) {
+      query.isGift = isGift === 'true'; // Convert to boolean
+    }
+
+    // Filter by status if provided
+    if (status) {
+      query.status = status;
+    }
+
+    // Pagination setup (25 items per page)
+    const pageSize = 25;
+    const transactions = await Transaction.find(query)
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+    
+    const total = await Transaction.countDocuments(query); // Total for pagination
+
+    res.json({ transactions, total });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching transactions' });
+  }
+}
+export  {getDashboardData,updateUserRole,getTransactions};

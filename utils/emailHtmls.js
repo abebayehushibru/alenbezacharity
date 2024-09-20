@@ -173,9 +173,11 @@ const  generateHtmlTemplate=(templateType, params)=> {
   
           <!-- Content Section -->
           <div class="content">
-            <p>Hello <strong>${params.to_name}</strong>,</p>
+            <p>Hello <strong>Alenbeza leader</strong>,</p>
             <p>You have received a new message from Website </p>
-            
+               <p>Full  Name  : ${params.from_name}</p>
+                <p>Phone Number  : ${params.phone} </p>
+                   <p>Email  : ${params.from_email}</p>
             <!-- Message Box -->
             <div class="message-box">
               ${params.message}
@@ -186,7 +188,7 @@ const  generateHtmlTemplate=(templateType, params)=> {
   
           <!-- Footer Section -->
           <div class="footer">
-            <p>Thank you for supporting us!</p>
+         
             <p><a href="http://alenbezacharity.netlify.app/">Visit our Website</a></p>
             <p>&copy; 2024 Alenbeza Charity. All Rights Reserved.</p>
           </div>
