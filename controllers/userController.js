@@ -328,36 +328,6 @@ await sendMail(mailOptions);
 
 
 
-// // Controller to get all gifts
-//  const getAllGifts = async (req, res) => {
-//   try {
-//     const gifts = await Gift.find({});
-//     res.status(200).json(gifts);
-//   } catch (error) {
-//     res.status(500).json({ message: 'Error fetching gifts', error });
-//   }
-// };
-
-// // Controller to update gift status - for material gifts only
-//  const updateGiftStatus = async (req, res) => {
-//   const { id } = req.params;
-//   const { status } = req.body; // Expected status from request body
-
-//   try {
-//     const gift = await Gift.findById(id);
-//     if (!gift) return res.status(404).json({ message: 'Gift not found' });
-
-//     if (gift.typeOfGift !== 'material') {
-//       return res.status(400).json({ message: 'Status update is allowed only for material gifts' });
-//     }
-
-//     gift.status = status; // Update the gift status
-//     await gift.save();
-//     res.status(200).json({ message: 'Gift status updated successfully', gift });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Error updating gift status', error });
-//   }
-// };
 
 // Controller to process a gift (material or money)
  export const processGift = async (req, res) => {
