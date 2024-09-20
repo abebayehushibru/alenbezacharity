@@ -16,7 +16,6 @@ import Dashbord from "./pages/Admins/Dashbord";
 import NotFound from "./pages/NotFound";
 import AllChildren from "./pages/Admins/Childrens";
 import ContactUs from "./pages/Contact";
-import { usePopup } from "./context/popUpContext";
 import ChildDetailPage from "./pages/Admins/ChildDetailPage";
 import MemberDetailPage from "./pages/Admins/MemberDetailPage";
 import AllPosts from "./pages/Admins/Post";
@@ -29,19 +28,36 @@ import Transactions from "./pages/Admins/Transactions";
 
 export const AppContent = () => {
   const location = useLocation();
+const tele=window.Telegram.WebApp
+
+useEffect(() => {
+  tele.ready();
+
+  // Handle back button click event
+  tele.onEvent('backButtonClicked', () => {
+    window.history.back(); 
+  });
+}, [tele]);
  
+  
+
   const { requireRole } = useAuth(); // Use requireRole for role-based authorization
+
+  // Function to check if the user is on a mobile device
+  const isMobileDevice = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
 
   // Define routes that don't need Navbar and Footer
   const isAdminRoute = location.pathname.startsWith("/admin");
-
-
+  const showAdminRoutes = !isMobileDevice(); // Determine if admin routes should be shown
 
   return (
     <>
       <div className="absolute top-0 max-w-[1360px] w-full mx-auto max-h-full overflow-y-scroll">
         {/* Conditionally render Navbar and Footer based on route */}
         {!isAdminRoute && <Navbar />}
+
 
         <Routes>
           {/* Main application routes */}
@@ -55,31 +71,26 @@ export const AppContent = () => {
           <Route path="*" element={<NotFound />} />
 
           {/* Admin routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Dashbord />} />
-
-            {/* Routes requiring specific roles */}
-            <Route path="members/all" element={requireRole('superadmin', 'Finance-controller') ? <Members /> : <Navigate to="/not-authorized" />} />
-            <Route path="members/view/:id" element={requireRole('superadmin', 'Finance-controller') ? <MemberDetailPage /> : <Navigate to="/not-authorized" />} />
-
-            <Route path="members/admins" element={requireRole('superadmin') ? <AllAdmins /> : <Navigate to="/not-authorized" />} />
-            <Route path="members/admins/:id" element={requireRole('superadmin') ? <MemberDetailPage /> : <Navigate to="/not-authorized" />} />
-
-            <Route path="members/deleted" element={requireRole('superadmin') ? <AllDeletedMembers /> : <Navigate to="/not-authorized" />} />
-            <Route path="members/deleted/:id" element={requireRole('superadmin') ? <MemberDetailPage /> : <Navigate to="/not-authorized" />} />
-            <Route path="transactions" element={requireRole('superadmin', 'Finance-controller') ? <Transactions /> : <Navigate to="/not-authorized" />} />
-          
-            <Route path="donations/gifts" element={requireRole('superadmin', 'Finance-controller') ? <Gifts /> : <Navigate to="/not-authorized" />} />
-            <Route path="donations/gifts/:id" element={requireRole('superadmin', 'Finance-controller') ? <GiftDetail /> : <Navigate to="/not-authorized" />} />
-
-            <Route path="posts" element={requireRole('superadmin', 'Content-manager') ? <AllPosts /> : <Navigate to="/not-authorized" />} />
-            <Route path="posts/:id" element={requireRole('superadmin', 'Content-manager') ? <AdminPostDetail /> : <Navigate to="/not-authorized" />} />
-
-            <Route path="childrens" element={requireRole('superadmin', 'Finance-controller') ? <AllChildren /> : <Navigate to="/not-authorized" />} />
-            <Route path="childrens/:id" element={requireRole('superadmin', 'Finance-controller') ? <ChildDetailPage /> : <Navigate to="/not-authorized" />} />
-
-            <Route path="*" element={<NotFound />} />
-          </Route>
+          {showAdminRoutes && (
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Dashbord />} />
+              {/* Routes requiring specific roles */}
+              <Route path="members/all" element={requireRole('superadmin', 'Finance-controller') ? <Members /> : <Navigate to="/not-authorized" />} />
+              <Route path="members/view/:id" element={requireRole('superadmin', 'Finance-controller') ? <MemberDetailPage /> : <Navigate to="/not-authorized" />} />
+              <Route path="members/admins" element={requireRole('superadmin') ? <AllAdmins /> : <Navigate to="/not-authorized" />} />
+              <Route path="members/admins/:id" element={requireRole('superadmin') ? <MemberDetailPage /> : <Navigate to="/not-authorized" />} />
+              <Route path="members/deleted" element={requireRole('superadmin') ? <AllDeletedMembers /> : <Navigate to="/not-authorized" />} />
+              <Route path="members/deleted/:id" element={requireRole('superadmin') ? <MemberDetailPage /> : <Navigate to="/not-authorized" />} />
+              <Route path="transactions" element={requireRole('superadmin', 'Finance-controller') ? <Transactions /> : <Navigate to="/not-authorized" />} />
+              <Route path="donations/gifts" element={requireRole('superadmin', 'Finance-controller') ? <Gifts /> : <Navigate to="/not-authorized" />} />
+              <Route path="donations/gifts/:id" element={requireRole('superadmin', 'Finance-controller') ? <GiftDetail /> : <Navigate to="/not-authorized" />} />
+              <Route path="posts" element={requireRole('superadmin', 'Content-manager') ? <AllPosts /> : <Navigate to="/not-authorized" />} />
+              <Route path="posts/:id" element={requireRole('superadmin', 'Content-manager') ? <AdminPostDetail /> : <Navigate to="/not-authorized" />} />
+              <Route path="childrens" element={requireRole('superadmin', 'Finance-controller') ? <AllChildren /> : <Navigate to="/not-authorized" />} />
+              <Route path="childrens/:id" element={requireRole('superadmin', 'Finance-controller') ? <ChildDetailPage /> : <Navigate to="/not-authorized" />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          )}
         </Routes>
 
         <PopUpContainer />

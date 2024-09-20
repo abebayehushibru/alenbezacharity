@@ -6,6 +6,7 @@ import { ABC_BACKEND_API_URL } from '../../configf/config';
 import CustomLoadingButton from '../../components/controls/CustomButton';
 import AdminRecentCard from '../../components/Cards/AdminRecentCard';
 import { formatDate } from '../../services/functions';
+import { useToast } from '../../context/ToastContext';
 
 const MemberDetailPage = () => {
   const { id } = useParams(); // Get the member ID from URL params
@@ -15,7 +16,7 @@ const MemberDetailPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
   const { user } = useAuth(); // Get the current user from context
-
+const {showToast}=useToast()
   useEffect(() => {
     if (user?.token===""||user?.role==="member") {
       window.location.replace("/")
@@ -31,10 +32,11 @@ const MemberDetailPage = () => {
           }
         }); // Update the URL to match your users API endpoint
        
-        console.log(response.data);
+       
          setMember(response.data.user);
          setDonation(response.data.donations)
       } catch (error) {
+        showToast(error.response.data.message||'Error fetching member details', "error")
         console.error('Error fetching member details:', error);
       } finally{
         setIsLoading(false)
@@ -42,7 +44,7 @@ const MemberDetailPage = () => {
     };
 
     fetchMemberDetails();
-  }, [id, user?.role, user?.token]);
+  }, [id, showToast, user?.role, user?.token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,10 +59,19 @@ const MemberDetailPage = () => {
     setIsLoading(true);
     if (validateFields()) {
       try {
-        await axios.put(`${ABC_BACKEND_API_URL}/user/edit/${id}`, member);
+        await axios.post(`${ABC_BACKEND_API_URL}/users/edit/${id}`, member,{
+          headers: {
+            'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+            'Content-Type': 'application/json',
+            // Add any other headers you need
+          }
+        });
+        showToast('Member profile updated successfully', "success")
         setIsLoading(false);
         setIsEditing(false);
       } catch (error) {
+        showToast(error.response.data.message||'Error updating ', "error")
+        setIsEditing(false);
         setIsLoading(false);
         console.error('Error saving member details:', error);
       }
@@ -250,9 +261,7 @@ const MemberDetailPage = () => {
           <h2 className="text-sm font-semibold uppercase text-black/40">
             Recent Added Donation from {member.firstname} {member.lastname} 
           </h2>
-          <Link to="/" className="text-blue-500 hover:underline">
-            See All
-          </Link>
+         
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

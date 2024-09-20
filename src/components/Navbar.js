@@ -61,7 +61,10 @@ const Greeting = ({ user }) => {
 
 const{showPopup}=usePopup() 
 
-
+ // Function to check if the user is on a mobile device
+ const isMobileDevice = () => {
+  return /Mobi|Android/i.test(navigator.userAgent);
+};
   return (
     <div className="w-full max-w-[1360px] mx-auto">
       {/* Top Bar */}
@@ -193,7 +196,7 @@ const{showPopup}=usePopup()
                   >
                     Edit Profile
                   </li>
-                  {requireRole("superadmin","Finance-controller","Content-creator")&& <li
+                  {isMobileDevice  && requireRole("superadmin","Finance-controller","Content-creator")&& <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                  
                   >
@@ -321,11 +324,14 @@ const{showPopup}=usePopup()
                   >
                     Edit Profile
                   </li>
-                  {user?.role==="admin" || user?.id==="ABC/0013/24"&& <li
+                  {isMobileDevice  && requireRole("superadmin","Finance-controller","Content-creator")&& <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={handleLogout}
+                 
                   >
-                    <Link to="/admin"> Switch to admin</Link>
+                    <Link onClick={()=>{setIsDropdownOpen(false);
+                     
+
+                    }} to="/admin"> Switch to admin</Link>
                    
                   </li>}
                   <li
