@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-    origin: 'https://alenbezacharity.netlify.app', 
+    origin:['https://alenbezacharity.netlify.app', 'https://web.telegram.org'], 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // Allows sending cookies or authorization headers
   }));
