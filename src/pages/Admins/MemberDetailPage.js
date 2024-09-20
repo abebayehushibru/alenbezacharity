@@ -10,28 +10,39 @@ import { formatDate } from '../../services/functions';
 const MemberDetailPage = () => {
   const { id } = useParams(); // Get the member ID from URL params
   const [member, setMember] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [donation, setDonation] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
   const { user } = useAuth(); // Get the current user from context
 
   useEffect(() => {
-    if (user?.token==""||user?.role=="member") {
+    if (user?.token===""||user?.role==="member") {
       window.location.replace("/")
     }
     const fetchMemberDetails = async () => {
       try {
-        const response = await axios.get(`${ABC_BACKEND_API_URL}/users/findById/${id}`); // Update the URL to match your users API endpoint
+        setIsLoading(true)
+        const response = await axios.get(`${ABC_BACKEND_API_URL}/users/findById/${id}`,{
+          headers: {
+            'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+            'Content-Type': 'application/json',
+            // Add any other headers you need
+          }
+        }); // Update the URL to match your users API endpoint
        
         console.log(response.data);
-         setMember(response.data);
+         setMember(response.data.user);
+         setDonation(response.data.donations)
       } catch (error) {
         console.error('Error fetching member details:', error);
+      } finally{
+        setIsLoading(false)
       }
     };
 
     fetchMemberDetails();
-  }, [id,user?.token]);
+  }, [id, user?.role, user?.token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,8 +84,11 @@ const MemberDetailPage = () => {
     setIsEditing(false);
 
   };
+  if (isLoading) {
+    return <div className='h-full w-full flex items-center justify-center'>Loading</div>;
+  }
 
-  if (!member) {
+  if (!isLoading && !member) {
     return <div className='h-full w-full flex items-center justify-center'>Member not found</div>;
   }
 
@@ -242,15 +256,8 @@ const MemberDetailPage = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <AdminRecentCard />
-          <AdminRecentCard />
-          <AdminRecentCard />
-          <AdminRecentCard />
-          <AdminRecentCard />
-          <AdminRecentCard />
-          <AdminRecentCard />
-          <AdminRecentCard />
-          <AdminRecentCard />
+          {donation.map((item)=>(      <AdminRecentCard data={item} key={item.id} />))
+              }
         </div>
       </div>
     </div>

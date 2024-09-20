@@ -172,7 +172,9 @@ const AddAdmin = ({ id, firstname, lastname, phoneNumber }) => {
             >
               <option value="" disabled>Select Role</option>
               <option value="Content-manager">Content Manager</option>
+              
               <option value="Finance-controller">Finance Controller</option>
+              <option value="superadmin">Super Admin</option>
             </select>
             {errors.adminRole && <p className="text-red-500 text-sm">{errors.adminRole}</p>}
           </div>

@@ -234,7 +234,7 @@ const {showToast}=useToast()
         </div>
 
         {/* Email */}
-        <div className="mb-4 sm:col-span-2">
+        <div className="mb-4 ">
           <label htmlFor="email" className="block font-semibold">
             Email
           </label>
@@ -256,7 +256,24 @@ const {showToast}=useToast()
             <p className="text-red-500 text-sm">{errors.email}</p>
           )}
         </div>
-
+{/* Email */}
+<div className="mb-4 ">
+          <label htmlFor="email" className="block font-semibold">
+            ID
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData?.customId}
+          
+            disabled
+            className={`w-full p-2 border rounded mt-1 focus:outline-none focus:ring-2 
+                 'focus:ring-blue-500'
+            'bg-gray-100'`}
+          />
+          
+        </div>
         {/* Address */}
         <div className="mb-4 sm:col-span-2">
           <label htmlFor="address" className="block font-semibold">

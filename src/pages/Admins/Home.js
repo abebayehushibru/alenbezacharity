@@ -14,21 +14,23 @@ import { TiArrowSyncOutline } from "react-icons/ti";
 import { FaChild } from "react-icons/fa6";
 import { useAuth } from "../../context/AuthContext";
 import SmallPopUpContainer from "../../components/popup/SmallPopUpContainer";
+import { FaDonate } from "react-icons/fa";
+
 const Home = () => {
   const [openDropdown, setOpenDropdown] = useState("");
-  const { user } = useAuth;
+  const { user, requireRole } = useAuth(); // Correctly calling the useAuth hook
+
   const handleDropdown = (menu) => {
     setOpenDropdown(openDropdown === menu ? "" : menu);
   };
 
   return (
-    <div className=" relative   w-full flex flex-col h-screen bg-gray-100">
+    <div className="relative w-full flex flex-col h-screen bg-gray-100">
       {/* Dashboard Navbar */}
       <div className="flex justify-between items-center p-2 px-4 bg-white shadow-lg">
         <div className="flex items-center space-x-4">
           {/* Logo and Name */}
           <div className="text-lg font-bold">
-            {" "}
             <img
               src={logo}
               alt="Admin Avatar"
@@ -49,11 +51,11 @@ const Home = () => {
           </div>
           <div className="switch relative flex flex-row gap-3 w-7 items-center ">
             {/* Switch Account Icon */}
-            <div className="hidden absolute p-2 py-1 bg-black/80 rounded-sm  text-white -left-32 shadow-sm ">
+            <div className="hidden absolute p-2 py-1 bg-black/80 rounded-sm text-white -left-32 shadow-sm">
               <span> Switch account </span>
             </div>
             <Link
-              to={"/"}
+              to="/"
               className="bg-black/5 p-2 rounded-full hover:bg-black/80 hover:text-white text-black"
             >
               <TiArrowSyncOutline size={20} />
@@ -80,80 +82,88 @@ const Home = () => {
               </div>
 
               {/* Members Menu */}
-              <div>
-                <button
-                  onClick={() => handleDropdown("members")}
-                  className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-700"
-                >
-                  <span className="flex items-center">
-                    <AiOutlineUser className="mr-2" />
-                    Members
-                  </span>
-                  <BiChevronDown />
-                </button>
-                {openDropdown === "members" && (
-                  <div className="ml-4 space-y-2">
-                    <Link
-                      to="./members/all"
-                      className="block p-2 rounded hover:bg-gray-700"
-                    >
-                      All Members
-                    </Link>
-                    <Link
-                      to="./members/admins"
-                      className="block p-2 rounded hover:bg-gray-700"
-                    >
-                      Admins
-                    </Link>
-                    <Link
-                      to="./members/deleted"
-                      className="block p-2 rounded hover:bg-gray-700"
-                    >
-                      Removed
-                    </Link>
-                    
-                  </div>
-                )}
-              </div>
+              {requireRole("superadmin", "Finance-controller") && (
+                <div>
+                  <button
+                    onClick={() => handleDropdown("members")}
+                    className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-700"
+                  >
+                    <span className="flex items-center">
+                      <AiOutlineUser className="mr-2" />
+                      Members
+                    </span>
+                    <BiChevronDown />
+                  </button>
+                  {openDropdown === "members" && (
+                    <div className="ml-4 space-y-2">
+                      <Link
+                        to="./members/all"
+                        className="block p-2 rounded hover:bg-gray-700"
+                      >
+                        All Members
+                      </Link>
+                      {requireRole("superadmin") && (
+                        <>
+                          <Link
+                            to="./members/admins"
+                            className="block p-2 rounded hover:bg-gray-700"
+                          >
+                            Admins
+                          </Link>
+                          <Link
+                            to="./members/deleted"
+                            className="block p-2 rounded hover:bg-gray-700"
+                          >
+                            Removed
+                          </Link>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Donations Menu */}
-              <div>
-                <button
-                  onClick={() => handleDropdown("donations")}
-                  className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-700"
-                >
-                  <span className="flex items-center">
-                    <AiOutlineGift className="mr-2" />
-                    Gift Donation
-                  </span>
-                  <BiChevronDown />
-                </button>
-                {openDropdown === "donations" && (
-                  <div className="ml-4 space-y-2">
-                    <Link
-                      to="./donations/gifts"
-                      className="block p-2 pl-3 rounded hover:bg-gray-700"
-                    >
-                      All Gifts
-                    </Link>
-                    
-                  </div>
-                )}
-              </div>
+              {requireRole("superadmin", "Finance-controller") && (
+                <div>
+                  <button
+                    onClick={() => handleDropdown("donations")}
+                    className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-700"
+                  >
+                    <span className="flex items-center">
+                      <AiOutlineGift className="mr-2" />
+                      Gift Donation
+                    </span>
+                    <BiChevronDown />
+                  </button>
+                  {openDropdown === "donations" && (
+                    <div className="ml-4 space-y-2">
+                      <Link
+                        to="./donations/gifts"
+                        className="block p-2 pl-3 rounded hover:bg-gray-700"
+                      >
+                        All Gifts
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Post Menu */}
-              <div>
-                <Link
-                  to="./posts"
-                  className="flex items-center p-2 rounded hover:bg-gray-700"
-                >
-                  <AiOutlineEdit className="mr-2" />
-                  Post
-                </Link>
-              </div>
+              {requireRole("superadmin", "Content-manager") && (
+                <div>
+                  <Link
+                    to="./posts"
+                    className="flex items-center p-2 rounded hover:bg-gray-700"
+                  >
+                    <AiOutlineEdit className="mr-2" />
+                    Post
+                  </Link>
+                </div>
+              )}
 
-              {/* P     Beneficiary Children */}
-              <div>
+              {/* Beneficiary Children */}
+              {requireRole("superadmin", "Finance-controller") && (
                 <Link
                   to="./childrens"
                   className="flex items-center p-2 rounded hover:bg-gray-700"
@@ -161,7 +171,16 @@ const Home = () => {
                   <FaChild className="mr-2" />
                   Beneficiary Children
                 </Link>
-              </div>
+              )}
+              {requireRole("superadmin", "Finance-controller") && (
+                <Link
+                  to="./transactions"
+                  className="flex items-center p-2 rounded hover:bg-gray-700"
+                >
+                  <FaDonate className="mr-2" />
+                 Transaction
+                </Link>
+              )}
             </div>
           </div>
 
@@ -173,11 +192,10 @@ const Home = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="relative flex-1  ">
+        <div className="relative flex-1">
           <div className="absolute max-h-full overflow-y-auto min-w-full min-h-full bg-slate-300 grid grid-cols-1">
             <Outlet />
             <SmallPopUpContainer />
-            {/* <Dashboard/> */}
           </div>
         </div>
       </div>
@@ -188,7 +206,6 @@ const Home = () => {
           &copy; {new Date().getFullYear()} Alenbeza Charity. All Rights
           Reserved.
         </span>
-
         <span>Design & Developed by: Ahavah SWD & Technology</span>
       </div>
     </div>

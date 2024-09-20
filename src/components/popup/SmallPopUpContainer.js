@@ -26,6 +26,7 @@ const h=()=>{
         {smallPopupContent === 'admin' && <AddAdmin />}
         {smallPopupContent ==='post' && <PostForm />}
         {smallPopupContent ==='gift' && <OneTimeGiftForm />}
+        
         <button
           className='absolute right-4 top-4 hover:text-blue-700'
           onClick={()=>h()}

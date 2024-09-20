@@ -13,7 +13,7 @@ import { useToast } from "../../context/ToastContext";
 import { usePopup } from "../../context/popUpContext";
 
 const AdminPostDetail = () => {
-  const { requireRole,isAuthenticated } = useAuth();
+  const { requireRole,isAuthenticated,user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
   
@@ -30,7 +30,7 @@ const AdminPostDetail = () => {
   const {showPopup,hidePopup} =usePopup()
   useEffect(() => {
     const fetchPostData = async () => {
-showPopup("loading")
+      showPopup("loading")
       try {
         const response = await axios.get(ABC_BACKEND_API_URL+`/posts/${id}`);
         const { post, comments } = response.data;
@@ -46,12 +46,12 @@ showPopup("loading")
       
       
     };
-    if (requireRole('superadmin', 'content-controller','Finance-controller')) {
+    if (requireRole('superadmin','Finance-controller')?true:false) {
       navigate("/")
     }
 
     fetchPostData();
-  }, [id, navigate, requireRole, showToast]);
+  }, [hidePopup, id, navigate, requireRole, showPopup, showToast]);
 
   if (!post) {
     return (
@@ -80,20 +80,28 @@ showPopup("loading")
   const handleEditPost = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(ABC_BACKEND_API_URL+`/posts/update/${id}`, editedPost);
+      await axios.post(ABC_BACKEND_API_URL+`/posts/update/${id}`, editedPost,{headers: {
+        'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+        'Content-Type': 'application/json',
+        // Add any other headers you need
+      }});
       setShowEditForm(false);
       showToast("Post Updated successfully","success")
     } catch (error) {
-      showToast("Failed to update post","error")
+      showToast(error.response?.data.message || "Failed to update post","error")
       console.error("Failed to update post:", error);
-      setErrors(error.response?.data || {});
+      setErrors({});
     }
   };
 
   const handleDeleteComment = async (id) => {
            try {
-        await axios.delete(ABC_BACKEND_API_URL+`/posts/comment/delete/${id}`);
-       console.log(comments);
+        await axios.delete(ABC_BACKEND_API_URL+`/posts/comment/delete/${id}`,{headers: {
+          'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+          'Content-Type': 'application/json',
+          // Add any other headers you need
+        }});
+       
        
        const filteredComments=comments.filter((cm) => cm._id !== id)
        console.log(filteredComments);
@@ -101,7 +109,7 @@ showPopup("loading")
         setComments(filteredComments); 
         showToast("Comments Deleted successfully","success")
       } catch (error) {
-        showToast("Failed to delete comments","error")
+        showToast(error.response?.data.message || "Failed to delete comments","error")
         console.error("Failed to delete comments:", error);
       } finally {
         setShowConfirmPopup(false)

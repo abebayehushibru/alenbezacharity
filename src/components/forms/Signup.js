@@ -354,7 +354,13 @@ const SignUpForm = () => {
                   : "focus:ring-blue-500"
               }`}
             />
-            <label className="text-lg">I agree to the policy *</label>
+            <label className="text-lg">I agree to the   <button
+            type="button"
+            className="text-blue-500 hover:underline ml-1"
+            onClick={() => showPopup("terms-and-policies")}
+          >
+            terms and policies
+          </button> *</label>
           </div>
           {errors.agreePolicy && (
             <p className="text-red-500 text-sm">{errors.agreePolicy}</p>

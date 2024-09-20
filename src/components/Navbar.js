@@ -134,13 +134,28 @@ const{showPopup}=usePopup()
             </Link>
           </div>
 
-        { !user && <div className="pl-11">
+        { !user && <div className="pr-11 gap-6 flex">
+          <button 
+          onClick={()=>{setIsDropdownOpen(false);
+          showPopup("sign-in")
+
+          }}
+              className="px-4 py-1 bg-[#F84D42] border-[#F84D42] border-2 text-white font-semibold text-base rounded-[3px] hover:bg-[#F96056]"
+            
+            >
+              Login
+            </button>
             <Link
-              className="p-3 py-2 bg-[#F84D42] text-white font-semibold text-base rounded-[3px] hover:bg-[#F96056]"
+            onClick={()=>{setIsDropdownOpen(false);
+          
+
+            }}
+              className="p-3 py-1 bg-white border-[#F84D42] border-2 text-[#F84D42] font-semibold text-base rounded-[3px] hover:bg-[#F96056] hover:text-white"
               to="/sign-up"
             >
               Register now
             </Link>
+            
           </div>}
       
         {/* User Info and Dropdown */}
@@ -166,7 +181,10 @@ const{showPopup}=usePopup()
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   
                     >
-                    <Link to="/payments">My donation</Link>
+                    <Link onClick={()=>{setIsDropdownOpen(false);
+                     
+
+                    }} to="/payments">My donation</Link>
                   </li>
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -179,7 +197,10 @@ const{showPopup}=usePopup()
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                  
                   >
-                    <Link to="/admin"> Switch to admin</Link>
+                    <Link onClick={()=>{setIsDropdownOpen(false);
+                     
+
+                    }} to="/admin"> Switch to admin</Link>
                    
                   </li>}
                   <li
@@ -247,13 +268,29 @@ const{showPopup}=usePopup()
           >
             Contact
           </Link>
-          { !user &&    <Link
-            className="p-3 py-2 bg-[#F84D42] text-white font-semibold text-base rounded-[3px] hover:bg-[#F96056] mt-2"
-            to="/sign-up"
-            onClick={toggleMobileMenu}
-          >
-            Register now
-          </Link>}
+          { !user &&   <div className="pr-11 gap-4 flex">
+          <button 
+          onClick={()=>{setIsDropdownOpen(false);
+          showPopup("sign-in")
+
+          }}
+              className="px-4 py-1 bg-[#F84D42] border-[#F84D42] border-2 text-white font-semibold text-base rounded-[3px] hover:bg-[#F96056]"
+            
+            >
+              Login
+            </button>
+            <Link
+            onClick={()=>{setIsDropdownOpen(false);
+          
+
+            }}
+              className="p-3 py-1 bg-white border-[#F84D42] border-2 text-[#F84D42] font-semibold text-base rounded-[3px] hover:bg-[#F96056] hover:text-white"
+              to="/sign-up"
+            >
+              Register now
+            </Link>
+            
+          </div>}
           {user && (
           <div className="relative flex items-center md:ml-5" ref={dropdownRef}>
             <img

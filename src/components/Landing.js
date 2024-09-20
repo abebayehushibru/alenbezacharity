@@ -19,22 +19,33 @@ showPopup
           ልጆች የዓለማችን እጅግ ውድ ሀብት እና የወደፊት ተስፋ ናቸው!
           </p>
           <div className=" w-64 flex gap-3">
-          {!user?.token?<button
+          {!user?.token?<>
+            <button
               className="justify-center flex flex-1 p-3 bg-[#F84D42] text-white font-semibold text-base rounded-[3px]  text-center"
              onClick={()=>showPopup("sign-in")}
             >
               Login
-            </button>: <Link
+            </button>
+            <Link
+              className=" justify-center flex flex-1 p-3 bg-[#ffb840] text-white font-semibold text-base rounded-[3px] "
+              to="sign-up"
+            >
+             Register now
+            </Link>
+          </>: <>
+          <Link to={"/donate-now"}
                   className="justify-center flex flex-1 p-3 bg-[#F84D42] text-white font-semibold text-base rounded-[3px]  text-center" href="/"
             >
               Donate now
-            </Link>}
-            <a
+            </Link>
+            <Link
               className=" justify-center flex flex-1 p-3 bg-[#ffb840] text-white font-semibold text-base rounded-[3px] "
-              href="/"
+              to="/"
             >
               Contact us
-            </a>
+            </Link>
+          </>}
+            
           </div>
         </div>
       </div>

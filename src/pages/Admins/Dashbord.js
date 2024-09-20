@@ -8,26 +8,36 @@ import AdminRecentCard from "../../components/Cards/AdminRecentCard";
 import { Link } from "react-router-dom";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
 import { usePopup } from "../../context/popUpContext";
+import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../context/ToastContext";
 
 const Dashbord = () => {
   const [data,setData]=useState()
-
+const {user}=useAuth()
+const {showToast}=useToast()
   const {showPopup,hidePopup}=usePopup()
   useEffect( () => {
     showPopup("loading");
       axios
-      .get(ABC_BACKEND_API_URL+"/admin/dashboard")
+      .get(ABC_BACKEND_API_URL+"/admin/dashboard",{
+        headers: {
+          'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+          'Content-Type': 'application/json',
+          // Add any other headers you need
+        }
+      })
       .then((response) => {
-        console.log(response.data);
+        showToast( `Welcome to Admin Dashboard`,"success")
         const data=response.data
       setData(data);
       hidePopup();
   }).catch((e)=>{
     hidePopup();
-console.log(e);
+    showToast(e.response.data.message|| "Error on fetching datas","error")
+    console.log(e);
 
   });
-    }, [hidePopup, showPopup]);
+    }, [  user?.token]);
   return (
     <div className="relative flex h-full flex-1 flex-col px-4  mt-1 py-2 bg-white gap-1  ">
       <h2 className=" text-lg font-bold"> Dashboad</h2>
@@ -79,9 +89,7 @@ console.log(e);
                 Recent Added Monthly payment
               </h2>
 
-              <Link to={"/"} className="text-blue-500 hover:underline">
-                see all
-              </Link>
+             
             </div>{" "}
             <div>{
               data?.recentMonthlyPayments.map((item)=>(      <AdminRecentCard data={item} />))
@@ -95,9 +103,7 @@ console.log(e);
               <h2 className="text-sm font-semibold uppercase text-black/40">
                 Recent Added Gifts
               </h2>
-              <Link to={"/"} className="text-blue-500 hover:underline">
-                see all
-              </Link>
+            
             </div>
 
             <div>

@@ -4,37 +4,50 @@ import { Link, useParams } from 'react-router-dom';
 import { ABC_BACKEND_API_URL } from '../../configf/config';
 import CustomLoadingButton from '../../components/controls/CustomButton';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 
 const GiftDetailPage = () => {
   const { id } = useParams(); // Get the gift ID from URL params
   const [gift, setGift] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { showToast } = useToast(); 
-
+  const { user } = useAuth(); 
   useEffect(() => {
     const fetchGiftDetails = async () => {
       try {
-        const response = await axios.get(`${ABC_BACKEND_API_URL}/donations/gifts/${id}`); // Update the URL to match your gifts API endpoint
+        const response = await axios.get(`${ABC_BACKEND_API_URL}/donations/gifts/${id}`,{
+          headers: {
+            'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+            'Content-Type': 'application/json',
+            // Add any other headers you need
+          }
+        }); // Update the URL to match your gifts API endpoint
       
       console.log(response.data);
         setGift(response.data.gift);
       } catch (error) {
-        showToast("Error fetching gift details, check internet connection", "error");
+        showToast(error.response.data.message||"Error fetching gift details, check internet connection", "error");
         console.error('Error fetching gift details:', error);
       }
     };
 
     fetchGiftDetails();
-  }, [id, showToast]);
+  }, [id, showToast, user?.token]);
 
   const handleStatusChange = async (status) => {
     setIsLoading(true);
     try {
-      await axios.post(`${ABC_BACKEND_API_URL}/donations/gifts/${id}/status`, { status });
+      await axios.post(`${ABC_BACKEND_API_URL}/donations/gifts/${id}/status`, { status },{
+        headers: {
+          'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+          'Content-Type': 'application/json',
+          // Add any other headers you need
+        }
+      });
       setGift(prevGift => ({ ...prevGift, status }));
       showToast(`Gift status updated to ${status}`, "success");
     } catch (error) {
-      showToast("Error updating gift status, try again", "error");
+      showToast(error.response.data.message|| "Error updating gift status, try again", "error");
       console.error('Error updating gift status:', error);
     } finally {
       setIsLoading(false);

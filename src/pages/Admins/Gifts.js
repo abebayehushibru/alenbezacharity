@@ -7,6 +7,7 @@ import { ABC_BACKEND_API_URL } from "../../configf/config";
 
 import { useToast } from "../../context/ToastContext";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 
 const Gifts = ({ params }) => {
@@ -16,13 +17,20 @@ const Gifts = ({ params }) => {
   const [selectedType, setSelectedType] = useState();
   const [selectedStatus, setSelectedStatus] = useState();
   const {showToast}=useToast();
-
+  const {user}=useAuth();
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const response = await axios.get(`${ABC_BACKEND_API_URL}/donations/gifts`, {
-          params: { typeOfGift:selectedType, year:selectedYear, status :selectedStatus,}, // Pass the selected year as a query parameter if needed
+          params: { typeOfGift:selectedType, year:selectedYear, status :selectedStatus,
+        
+          },
+          headers: {
+            'Authorization': 'Bearer '+user?.token, 
+            'Content-Type': 'application/json',
+            
+          } 
         });    
         console.log(response);
         const rowsWithId = response.data.gifts.map((row, index) => ({ ...row, id: row._id })); 
@@ -36,7 +44,7 @@ const Gifts = ({ params }) => {
     };
 
     fetchData();
-  }, [selectedStatus, selectedType, selectedYear, showToast]);
+  }, [selectedStatus, selectedType, selectedYear, showToast, user?.token]);
 
  
  

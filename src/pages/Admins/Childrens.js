@@ -7,9 +7,11 @@ import { ABC_BACKEND_API_URL } from "../../configf/config";
 import { Link } from "react-router-dom";
 import DeleteConfirmation from "../../components/Delete";
 import { useToast } from "../../context/ToastContext";
+import { useAuth } from "../../context/AuthContext";
 
 const AllChildren = ({ params }) => {
   const [data, setData] = useState([]);
+  const {user} = useAuth();
   const [loading, setLoading] = useState(true);
  
   const {showToast}=useToast();
@@ -19,7 +21,10 @@ const AllChildren = ({ params }) => {
   useEffect(() => {
     
     axios
-      .get(ABC_BACKEND_API_URL + "/child") // Update the URL to match your children API endpoint
+      .get(ABC_BACKEND_API_URL + "/child",{headers: {
+        Authorization: `Bearer ${user?.token}` ,
+        'Content-Type': 'application/json',
+      }}) 
       .then((response) => {
         console.log(response.data);
         
@@ -39,10 +44,11 @@ const AllChildren = ({ params }) => {
         setLoading(false);
       })
       .catch((e) => {
+        showToast(e.response.data.message|| "Error on fetching in data","error")
         console.error(e);
         setLoading(false);
       });
-  }, []);
+  }, [showToast, user?.token]);
 
   
 
@@ -98,7 +104,10 @@ const AllChildren = ({ params }) => {
     try {
       setLoading(true);
       // Perform the deletion using axios
-      await axios.delete(`${ABC_BACKEND_API_URL}/child/delete/${id}`);
+      await axios.delete(`${ABC_BACKEND_API_URL}/child/delete/${id}`,{headers: {
+        Authorization: `Bearer ${user.token}` // Pass the token in the Authorization header
+      
+    }});
       // Update state after deletion
       setData(data.filter((dt) => dt.id !== id));
       setShowConfirmPopup(false); // Hide popup after successful deletion
@@ -111,7 +120,7 @@ const AllChildren = ({ params }) => {
       setLoading(false);
       console.error("Error deleting child:", error);
      
-      showToast("Failed to delete child.","error")
+      showToast(error.response.data.message||"Failed to delete child.","error")
     }
   };
   return (

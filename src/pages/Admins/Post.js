@@ -7,6 +7,7 @@ import { ABC_BACKEND_API_URL } from "../../configf/config";
 import axios from "axios";
 import DeleteConfirmation from "../../components/Delete";
 import { useToast } from "../../context/ToastContext";
+import { useAuth } from "../../context/AuthContext";
 
 const AllPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -14,13 +15,19 @@ const AllPosts = () => {
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const { showToast } = useToast();
-
+  const { user } = useAuth();
   // Fetch all posts when the component mounts
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${ABC_BACKEND_API_URL}/posts`);
+        const response = await axios.get(`${ABC_BACKEND_API_URL}/posts`,{
+          headers: {
+            'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+            'Content-Type': 'application/json',
+            // Add any other headers you need
+          }
+        });
 
         // Map over the fetched data to change _id to id
         const fetchedArray = response.data.map((post,index) => ({
@@ -41,19 +48,25 @@ const AllPosts = () => {
     };
 
     fetchPosts();
-  }, [showToast]);
+  }, [showToast, user?.token]);
 
   // Function to handle the delete action
   const handleDeletePost = async (id) => {
     try {
-      await axios.delete(`${ABC_BACKEND_API_URL}/posts/delete/${id}`);
+      await axios.delete(`${ABC_BACKEND_API_URL}/posts/delete/${id}`,{
+        headers: {
+          'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+          'Content-Type': 'application/json',
+          // Add any other headers you need
+        }
+      });
       setPosts(posts.filter((post) => post._id !== id)); // Update state after deletion
       setShowConfirmPopup(false);
       showToast("Post deleted successfully.", "success");
     } catch (error) {
       console.error("Error deleting post:", error);
       setShowConfirmPopup(false);
-      showToast("Failed to delete post.", "error");
+      showToast(error.response?.data.message ||"Failed to delete post!", "error");
     }
   };
 

@@ -5,6 +5,7 @@ import PostCard from './Cards/PostCard';
 import { ABC_BACKEND_API_URL } from '../configf/config';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
+import ShimmerPlaceholder from './Cards/ShimmerPlaceholder';
 
 const Blogs = () => {
   const [posts, setPosts] = useState([]);
@@ -43,10 +44,7 @@ const Blogs = () => {
     setCurrentPage(page);
   };
 
-  if (loading) {
-    return <p className='py-2 text-center'>Loading...</p>;
-  }
-
+ 
   if (error) {
     return <p className='py-2 text-center'>Error please check your connection</p>;
   }
@@ -54,8 +52,13 @@ const Blogs = () => {
   return (
     <div id="blogs">
       <SectionHeading topText="Our Blog Post" midleText="Our Latest News & Update" />
-      <div className="flex justify-center gap-5 flex-wrap">
-        {posts?.map((post) => (
+      <div className="flex justify-center gap-5 flex-wrap  ">
+      {loading
+        ? // If loading, show 8 shimmer placeholders
+          Array(6).fill().map((_, index) => (
+            <ShimmerPlaceholder key={index} />
+          ))
+        : posts?.map((post) => (
           <PostCard
             key={post._id}
             id={post._id}

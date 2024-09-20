@@ -5,10 +5,11 @@ import { ABC_BACKEND_API_URL } from "../../configf/config";
 import { TiTimes } from "react-icons/ti";
 import CustomLoadingButton from "../controls/CustomButton";
 import { useToast } from "../../context/ToastContext";
+import { useAuth } from "../../context/AuthContext";
 
 const PostForm = () => {
   const { showToast } = useToast();
-
+  const { user } = useAuth();
   // State for form data
   const [formData, setFormData] = useState({
     title: "",
@@ -76,10 +77,11 @@ const PostForm = () => {
 
       try {
         setIsLoading(true);
-        const response = await axios.post(ABC_BACKEND_API_URL + "/posts/add", formDataToSend, {
+        await axios.post(ABC_BACKEND_API_URL + "/posts/add", formDataToSend,{
           headers: {
-            "Content-Type": "multipart/form-data",
-          },
+            'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+            
+          }
         });
         setFormData({
           title: "",
@@ -93,7 +95,7 @@ const PostForm = () => {
         console.log(error);
         
         setErrors({ serverError: error.response?.data?.message || "An error occurred" });
-        showToast("An error occurred please try again", "error");
+        showToast(error.response?.data?.message||"An error occurred please try again", "error");
         setIsLoading(false);
       }
     }

@@ -61,7 +61,7 @@ const [isSaving,setIsSaving]=useState()
       try {
       setIsSaving(true)
        await axios.post(ABC_BACKEND_API_URL + "/child/add", {...formData},{headers: {
-        Authorization: `Bearer ${user.token}` // Pass the token in the Authorization header
+        Authorization: `Bearer ${user?.token}` // Pass the token in the Authorization header
       }});
         // Reset the form after successful submission
         setFormData({

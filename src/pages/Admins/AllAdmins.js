@@ -7,7 +7,7 @@ import { ABC_BACKEND_API_URL } from "../../configf/config";
 import { useToast } from "../../context/ToastContext";
 import DeleteConfirmation from "../../components/Delete";
 import { Link } from "react-router-dom";
-
+import {useAuth} from '../../context/AuthContext'
 
 
 const AllAdmins = ({ params }) => {
@@ -15,13 +15,19 @@ const AllAdmins = ({ params }) => {
     const [loading,setLoading]=useState(true);
     const [selectedMemberId, setSelectedMemberId] = useState(null); // Track the post to delete
     const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Track the visibility of the confirmation popup
-
+     const {user}=useAuth()
    const {showToast}= useToast()
     useEffect( () => {
       setLoading(true);
         
         axios
-        .get(ABC_BACKEND_API_URL+"/users/all")
+        .get(ABC_BACKEND_API_URL+"/users/all",{
+          headers: {
+            'Authorization': 'Bearer ' +user?.token, 
+            'Content-Type': 'application/json',
+            // Add more headers as needed
+          }
+        })
         .then(async (response) => {
        const formattedUsers = response.data.filter(user => user.role !== "member" && user.role !== "banned");
         setData(formattedUsers||[])
@@ -29,10 +35,8 @@ const AllAdmins = ({ params }) => {
     }).catch((e)=>{
       setLoading(false);
        showToast("Something went be wrong  please check your connection or try again","error");
-
-
     });
-      }, []);
+      }, [showToast, user?.token]);
        // Function to open the confirmation popup
   const openConfirmPopup = (id) => {
     setSelectedMemberId(id);

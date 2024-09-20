@@ -7,6 +7,7 @@ import ChangePasswordForm from '../forms/ChangePasswordForm';
 import EditProfileForm from '../forms/EditProfileForm';
 import SignUpForm from '../forms/Signup';
 import Loading from './Loading';
+import TermsAndPolicies from '../TermsAndPolicies';
 
 
 const PopUpContainer = () => {
@@ -21,6 +22,8 @@ const PopUpContainer = () => {
             {type==="change-pwd"&&<ChangePasswordForm/> }
             {type==="edit-profile"&&<EditProfileForm/>}
             {type==="sign-up"&&<SignUpForm/>}
+            {type==="terms-and-policies"&&<TermsAndPolicies/>}
+            
             <button className=' absolute right-4 top-4  ' onClick={()=>hidePopup()}> <IoClose size={25} /> </button>
         </div>}
         {type==="loading"&&<Loading/>}

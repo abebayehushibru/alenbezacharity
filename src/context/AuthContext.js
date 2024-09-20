@@ -33,9 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   // Function to ensure user has required role, otherwise redirect
   const requireRole = (...roles) => {
- return !isAuthenticated() || !hasRole(...roles) 
-  
-   
+    return isAuthenticated() && hasRole(...roles) 
   };
 
   return (

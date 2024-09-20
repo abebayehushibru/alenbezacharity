@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useToast } from "../../context/ToastContext";
 import DeleteConfirmation from "../../components/Delete";
 import AddDonation from "../../components/AddDonation";
+import { useAuth } from "../../context/AuthContext";
 
 const Members = ({ params }) => {
   const [data, setData] = useState([]);
@@ -21,13 +22,18 @@ const Members = ({ params }) => {
     const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Track the visibility of the confirmation popup
     const [showAddDonationPopup, setShowAddDonationPopup] = useState(false); // Track the visibility of the confirmation popup
 
-
+    const {user}=useAuth()
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const response = await axios.get(`${ABC_BACKEND_API_URL}/users/all`,{
-          params: { selectedYear }, // Pass the selected year as a query parameter
+          params: { selectedYear }, 
+          headers: {
+            'Authorization': 'Bearer ' +user?.token, 
+            'Content-Type': 'application/json',
+          
+          }
         });
         const formattedUsers = response.data.filter(user => user.role !== "banned");
         setData(formattedUsers.reverse());
@@ -39,7 +45,7 @@ const Members = ({ params }) => {
     };
 
     fetchData();
-  }, [selectedYear]);
+  }, [selectedYear, user?.token]);
   const openConfirmPopup = (id) => {
     setSelectedMemberId(id);
     setShowConfirmPopup(true);

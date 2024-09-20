@@ -18,16 +18,19 @@ const ChildDetailPage = () => {
   useEffect(() => {
     const fetchChildDetails = async () => {
       try {
-        const response = await axios.get(`${ABC_BACKEND_API_URL}/child/${id}`); // Update the URL to match your children API endpoint
+        const response = await axios.get(`${ABC_BACKEND_API_URL}/child/${id}`,{headers: {
+            Authorization: `Bearer ${user?.token}` // Pass the token in the Authorization header
+          
+        }}); // Update the URL to match your children API endpoint
         setChild(response.data);
       } catch (error) {
-        showToast("Error fetching child details check intertnet connection","error")
+        showToast(error.response.data.message ||"Error fetching child details check intertnet connection","error")
         console.error('Error fetching child details:', error);
       }
     };
 
     fetchChildDetails();
-  }, [id, showToast]);
+  }, [id, showToast, user?.token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,7 +46,12 @@ const ChildDetailPage = () => {
     setIsLoading(true)
     if (validateFields()) {
       try {
-        await axios.post(ABC_BACKEND_API_URL+`/child/edit/${id}`, child);
+        await axios.post(ABC_BACKEND_API_URL+`/child/edit/${id}`, child,
+          {headers: {
+            Authorization: `Bearer ${user.token}` // Pass the token in the Authorization header
+          
+        }
+        });
         setIsLoading(false)
         setIsEditing(false);
         showToast("A child details  updated successfully","success")
@@ -51,7 +59,7 @@ const ChildDetailPage = () => {
         
       } catch (error) {
         setIsLoading(false)
-        showToast("Error updating child details Try again","error")
+        showToast( error.response.data.message||"Error updating child details Try again","error")
      
         console.error('Error saving child details:', error);
       }

@@ -74,7 +74,7 @@ const  {showToast}=useToast()
         console.log(response.data);
         setLoading(false);
       } catch (error) {
-        showToast("Error fetching data please refresh the page",)
+        showToast(error.response.data.message || "Error fetching data please refresh the page",)
         console.error("Error fetching data:", error);
         setLoading(false);
       }
@@ -86,7 +86,7 @@ const  {showToast}=useToast()
     } else {
       fetchData();
     }
-  }, [showToast, user.id, user.token]);
+  }, [showToast, user?.id, user?.token]);
 
   return (
     <div className="max-w-full px-0 sm:px-16 sm:py-5 gap-10">

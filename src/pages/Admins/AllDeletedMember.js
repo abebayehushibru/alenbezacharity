@@ -8,6 +8,7 @@ import { ABC_BACKEND_API_URL } from "../../configf/config";
 import { Link } from "react-router-dom";
 import { useToast } from "../../context/ToastContext";
 import DeleteConfirmation from "../../components/Delete";
+import { useAuth } from "../../context/AuthContext";
 
 const AllDeletedMembers = () => {
   const [data, setData] = useState([]);
@@ -15,13 +16,17 @@ const AllDeletedMembers = () => {
   const {showToast}=useToast();
   const [selectedMemberId, setSelectedMemberId] = useState(null); // Track the post to delete
  const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Track the visibility of the confirmation popup
-
+ const {user}=useAuth()
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${ABC_BACKEND_API_URL}/users/all`);
+        const response = await axios.get(`${ABC_BACKEND_API_URL}/users/all`,{headers: {
+          'Authorization': 'Bearer ' +user?.token, 
+          'Content-Type': 'application/json',
+          // Add more headers as needed
+        }});
         const formattedUsers = response.data.filter(user => user.role === "banned");
        console.log(formattedUsers);
        

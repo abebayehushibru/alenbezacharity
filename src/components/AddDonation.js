@@ -4,13 +4,15 @@ import CustomLoadingButton from './controls/CustomButton';
  // Make sure the URL points to your backend API
 import { useToast } from '../context/ToastContext';
 import { ABC_BACKEND_API_URL } from '../configf/config';
+import { useAuth } from '../context/AuthContext';
 
 const AddDonation = ({ user, onCancel }) => {
   const [amount, setAmount] = useState(25); // Initialize the amount with the minimum value
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState({}); // State to track field errors
   const { name, phonenumber, id } = user; // Destructure user data from props
-const {showToast}=useToast()
+   const {showToast}=useToast()
+   const {user: appuser  }=useAuth()
   // Validate the amount
   const validateAmount = (value) => {
     const errors = {};
@@ -35,7 +37,11 @@ const {showToast}=useToast()
           amount,
           name,
           phonenumber,
-        });
+        },{headers: {
+          'Authorization': 'Bearer '+appuser?.token, // Replace <your_token> with your actual token
+          'Content-Type': 'application/json',
+          // Add any other headers you need
+        }});
 
         // Handle the response if needed
         console.log('Donation successful:', response.data);
