@@ -5,7 +5,7 @@ import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 
 const donationRoutes = express.Router();
-donationRoutes.post('donations/monthly', processMonthlyPayment);
+donationRoutes.post('/monthly', processMonthlyPayment);
 donationRoutes.post('/gifts', processGift);
 donationRoutes.get('/gifts',authMiddleware,roleMiddleware(["Finance-controller","superadmin"]), getGifts);
 donationRoutes.get("/gifts/:id",authMiddleware,roleMiddleware(["Finance-controller","superadmin"]), getGiftById)
