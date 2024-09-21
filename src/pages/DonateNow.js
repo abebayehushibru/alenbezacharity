@@ -1,15 +1,10 @@
 import React, {  useState } from "react";
 
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
-import { ABC_BACKEND_API_URL } from "../configf/config";
+
 import OneTimeGiftForm from "../components/forms/OneTimeGiftForm";
 import MonthlyDonationForm from "../components/forms/MonthlyDonationForm";
 
-const nameRegex = /^[a-zA-Zà-žÀ-Ž'-]{2,}$/;
-const phoneRegex =
-  /^\+?[0-9]{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const intialfrom = {
   donationType: "",
   donor: "",
@@ -29,69 +24,15 @@ const intialfrom = {
 };
 const DonateNow = () => {
   
-  const { user } = useAuth();
+  
   const [errors, setErrors] = useState({});
-  const [searchedUser, setSearchedUser] = useState({});
+
   const [formData, setFormData] = useState(intialfrom);
 
 
 
 
-  const validateInputs = () => {
-    const newErrors = {};
-    if (!formData.donationType)
-      newErrors.donationType = "Please select a donation type";
-    if (formData.donationType === "monthly") {
-      if (!formData.donor) newErrors.donor = "Please select a donor";
-      if (formData.donor === "self") {
-        if (formData.amount === "") {
-          newErrors.amount = "Please enter an amount";
-        }
-      } else if (formData.donor === "others") {
-        if (formData.memberId === "") {
-          newErrors.memberId = "Please enter member Id";
-        }
-        if (formData.amount === "") {
-          newErrors.amount = "Please enter an amount";
-        }
-      }
-    }
-    if (formData.donationType === "gift") {
-      if (formData.firstname.trim() === "") {
-        newErrors.firstname = "Please enter first name";
-      } else if (!nameRegex.test(formData.firstname.trim())) {
-        newErrors.firstname = "First name must be character only";
-      }
-      if (formData.lastname.trim() === "") {
-        newErrors.lastname = "Please enter last name";
-      } else if (!nameRegex.test(formData.lastname.trim())) {
-        newErrors.lastname = "Last name must be character only";
-      }
-      if (formData.phonenumber.trim() === "") {
-        newErrors.phonenumber = "Please enter phone number";
-      } else if (!phoneRegex.test(formData.phonenumber)) {
-        newErrors.phonenumber = "Enter correct phone number";
-      }
-      if (formData.email !== "" && !emailRegex.test(formData.email)) {
-        newErrors.email = "Enter correct email address";
-      }
-
-      if (!formData.typeofGift)
-        newErrors.giftType = "Please select a gift type";
-      if (
-        (formData.giftRecipient === "child" ||
-          formData.giftRecipient === "childFamily") &&
-        !formData.selectedChild
-      ) {
-        newErrors.selectedChild = "Please select a child";
-      }
-    }
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
-  };
-
+ 
 
  
 

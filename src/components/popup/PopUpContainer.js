@@ -24,6 +24,7 @@ const PopUpContainer = () => {
             {type==="sign-up"&&<SignUpForm/>}
             {type==="terms-and-policies"&&<TermsAndPolicies/>}
             
+            
             <button className=' absolute right-4 top-4  ' onClick={()=>hidePopup()}> <IoClose size={25} /> </button>
         </div>}
         {type==="loading"&&<Loading/>}

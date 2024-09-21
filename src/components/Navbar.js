@@ -163,7 +163,7 @@ const{showPopup}=usePopup()
       
         {/* User Info and Dropdown */}
         {user && (
-          <div className="relative flex items-center md:ml-5" ref={dropdownRef}>
+          <div className="relative flex items-center md:ml-5 flex-row align-top" ref={dropdownRef}>
             <img
               src={user.photo || avatar} // Fallback to a default image if no photo
               alt="User"
@@ -178,8 +178,8 @@ const{showPopup}=usePopup()
             </p>
 
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-[180px] bg-white border rounded shadow-lg z-10">
-                <ul className="py-2 text-gray-700">
+              <div className="max-h-10 absolute  align-top right-0  w-[180px] bg-white border rounded shadow-lg z-10">
+                <ul className="py-2 text-gray-700 bg-white">
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   
@@ -192,9 +192,16 @@ const{showPopup}=usePopup()
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {setIsDropdownOpen(false);
-                      showPopup("edit-profile")}}
+                      showPopup("change-pwd")}}
                   >
                     Edit Profile
+                  </li>
+                  <li
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {setIsDropdownOpen(false);
+                      showPopup("edit-profile")}}
+                  >
+                    Change Password
                   </li>
                   {isMobileDevice  && requireRole("superadmin","Finance-controller","Content-creator")&& <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -295,7 +302,7 @@ const{showPopup}=usePopup()
             
           </div>}
           {user && (
-          <div className="relative flex items-center md:ml-5" ref={dropdownRef}>
+          <div className="relative flex  md:ml-5 gap-3" ref={dropdownRef}>
             <img
               src={user.photo || avatar} // Fallback to a default image if no photo
               alt="User"
@@ -303,15 +310,15 @@ const{showPopup}=usePopup()
               onClick={toggleDropdown}
             />
             <p
-              className="ml-2 cursor-pointer text-black"
+              className=" cursor-pointer text-black flex items-center"
               onClick={toggleDropdown}
             >
               {user.firstname}
             </p>
 
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-[180px] bg-white border rounded shadow-lg z-10">
-                <ul className="py-2 text-gray-700">
+              <div className="max-h-10  w-[180px] bg-white border rounded shadow-lg z-10">
+                <ul className="py-2 text-gray-700 bg-white">
                 <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   
@@ -323,6 +330,13 @@ const{showPopup}=usePopup()
                     onClick={() => showPopup("edit-profile")}
                   >
                     Edit Profile
+                  </li>
+                  <li
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {setIsDropdownOpen(false);
+                      showPopup("change-pwd")}}
+                  >
+                    Change Password
                   </li>
                   {isMobileDevice  && requireRole("superadmin","Finance-controller","Content-creator")&& <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"

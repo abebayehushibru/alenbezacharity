@@ -109,7 +109,7 @@ const MonthlyDonationForm = () => {
         const errorMsg = error.response?.data?.message || "An error occurred while processing your donation.";
         setErrors({ general: errorMsg });
         showToast(errorMsg, "error");
-        console.error("Error saving donation:", errorMsg);
+        console.error("Error saving donation:", error);
       } finally {
         setIsSaving(false);
       }

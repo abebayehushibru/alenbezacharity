@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
-
+import axios from 'axios'
+import { ABC_BACKEND_API_URL } from '../../configf/config';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import CustomLoadingButton from '../controls/CustomButton';
 const ChangePasswordForm = () => {
+  const {user}=useAuth()
+  const {showToast}=useToast()
+  const [isChanging,setIschanging]=useState(false)
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -45,13 +52,28 @@ const ChangePasswordForm = () => {
   };
 
   // Form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccessMessage('');
     if (validateForm()) {
-      console.log('Password changed successfully:', formData);
-      setSuccessMessage('Password has been successfully changed.');
-      setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setIschanging(true)
+      try {
+        await axios.post(ABC_BACKEND_API_URL+"/users/changePassword",formData,{
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user?.token}`,  // Assuming you have a token in state or localStorage
+          },
+        })
+        showToast("Password has been successfully changed.","success")
+        setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      } catch (error){
+        showToast(error.response.data.message|| "Error has occured on changing password","error")
+        console.log("Error has occured on changing password", error);
+       } finally{
+         setIschanging(false)
+      }
+    
+      
     }
   };
 
@@ -129,13 +151,8 @@ const ChangePasswordForm = () => {
           <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
         )}
       </div>
+<CustomLoadingButton isLoading={isChanging} buttonText='Change Password' loadingText='changing'type="submit"/>
 
-      <button
-        type="submit"
-        className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors"
-      >
-        Change Password
-      </button>
     </form>
   );
 };
