@@ -1,6 +1,7 @@
 // routes/userRoutes.js
 import express from "express";
 import {
+  changePassword,
   createUser,
   findUserByCustomId,
   getAllUsers,
@@ -28,5 +29,5 @@ userRoutes.post("/edit/:id",authMiddleware,roleMiddleware(["Finance-controller",
 userRoutes.get("/profile", authMiddleware, getProfile);
 userRoutes.post("/profile", authMiddleware, updateProfile);
 userRoutes.post("/sendMail", sendContactEmail);
-
+userRoutes.post("/changePassword",authMiddleware, changePassword);
 export default userRoutes;

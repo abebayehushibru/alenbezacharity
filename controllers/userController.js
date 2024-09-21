@@ -240,7 +240,42 @@ export const getProfile =async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+export const changePassword = async (req, res) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+console.log(req.body);
 
+  try {
+    // Get the authenticated user
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if the current password is correct
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    // Check if new password matches confirm password
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password has been successfully changed' });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+};
 export const updateProfile =async (req, res) => {
   try {
     // Extract user ID from token

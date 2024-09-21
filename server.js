@@ -8,6 +8,7 @@ import childRoutes from './routes/childRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import donationRoutes from './routes/donationRoutes.js';
+import startBot from './services/BotService.js';
 
 dotenv.config();
 
@@ -31,8 +32,9 @@ app.use('/donations', donationRoutes);
 app.use('/child', childRoutes);
 app.use('/admin', adminRoutes);
 
-// Routes
-
+  // Get the bot token from the environment variable
+  const TOKEN = process.env.BOT_TOKEN;
+startBot(TOKEN);
 
 
 
