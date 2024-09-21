@@ -130,7 +130,7 @@ const web_link = "https://alenbezacharity.netlify.app/";
       message += "|---------------------------------------|---------------------\n";
 
       rows.forEach((payment) => {
-        message += `|${payment.month} ${payment.status}\n`;
+        message += `|${payment.month}  :   ${payment.status}\n`;
       });
 
       if (info.message) {
