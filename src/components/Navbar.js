@@ -192,14 +192,14 @@ const{showPopup}=usePopup()
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {setIsDropdownOpen(false);
-                      showPopup("change-pwd")}}
+                      showPopup("edit-profile")}}
                   >
                     Edit Profile
                   </li>
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {setIsDropdownOpen(false);
-                      showPopup("edit-profile")}}
+                      showPopup("change-pwd")}}
                   >
                     Change Password
                   </li>
