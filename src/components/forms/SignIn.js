@@ -4,15 +4,18 @@ import { Link, useNavigation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { usePopup } from '../../context/popUpContext';
 import { ABC_BACKEND_API_URL } from '../../configf/config';
-// Main SignInForm component
+import CustomLoadingButton from "../controls/CustomButton";
+
 const SignInForm = () => {
   const [formData, setFormData] = useState({ phone: '', password: '' });
   const [errors, setErrors] = useState({});
   
    const [isLoading, setIsLoading] = useState(false);
+   const [isForgetting, setIsForgetting] = useState(false);
   const [showForgotPrompt, setShowForgotPrompt] = useState(false);
   const [showForgotPopup, setShowForgotPopup] = useState(false);
-  const {showPopup,hidePopup}=usePopup()
+  const {hidePopup}=usePopup()
+  const [success, setSuccess] = useState("");
  const {login}=useAuth()
   // Regex for validation
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -60,6 +63,8 @@ const SignInForm = () => {
      
     
       } catch (error) {
+        setFormData(prev =>({...prev, password: ''}))
+     
        setIsLoading(false);
      if (error.response && error.response.data && error.response.data.message) {
       setErrors({wrongPwdandPhone:error.response.data.message})
@@ -74,19 +79,37 @@ const SignInForm = () => {
   };
 
   // Forgot password handler
-  const handleForgotPassword = () => {
-    setShowForgotPrompt(true);
+  const handleForgotPassword = async () => {
+    const newErrors={}
+    if (!formData.phone  && !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Please enter your phone number.';
+      setErrors(newErrors);
+    }
+    else{
+      
+      setShowForgotPrompt(true);
+    }
+   
   };
 
   // Confirm password reset
-  const confirmForgotPassword = (confirm) => {
+  const confirmForgotPassword = async (confirm) => {
     setShowForgotPrompt(false);
     if (confirm) {
       setShowForgotPopup(true);
-      setTimeout(() => {
-        setShowForgotPopup(false);
-        alert('A new password has been sent to your phone number or email.');
-      }, 2000);
+      setIsForgetting(true)
+      try {
+        const response = await axios.post(ABC_BACKEND_API_URL+'/users/forgetpassword',{ phonenumber:formData.phone});
+      
+        setSuccess(response.data.message);
+      
+      } catch (error) {
+        setErrors(prev=>({forget:error.response.data.message||"Error on forgeting"}))
+      }
+      finally{
+        setIsForgetting(false)
+      }
+     
     }
   };
 
@@ -124,26 +147,10 @@ const SignInForm = () => {
         />
         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         {errors.wrongPwdandPhone && <p className="text-red-500 text-sm pb-2">{errors.wrongPwdandPhone}</p>}
-        {/* Submit Button */}
-         {isLoading ? (
-        <div
-          className="w-full bg-[#F84D43] text-white py-2 rounded-md flex items-center justify-center gap-2 transition duration-300"
-          style={{ height: '40px' }} // Matching button height
-        >
-          {/* Spinner */}
-          <div className="w-3 h-3 border-2 border-t-2 border-t-white border-gray-300 rounded-full animate-spin"></div>
-          {/* Loading Text */}
-          <span className="text-sm font-medium text-white">Signing In...</span>
-        </div>
-      ) : (
-        <button
-          type="submit"
-          className="w-full bg-[#F84D43] text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
-          onClick={handleSubmit}
-        >
-          Sign In
-        </button>
-      )}
+
+      <CustomLoadingButton isLoading={isLoading} buttonText='Sign In' loadingText='Signing In...'  type="submit" action={handleSubmit}/>
+      
+       
 
         {/* Forgot Password */}
         <p className="mt-4 text-center">
@@ -151,12 +158,21 @@ const SignInForm = () => {
             type="button"
             onClick={handleForgotPassword}
             className="text-blue-500 hover:underline"
+            disabled={isForgetting}
           >
             Forgot Password?
           </button>
+          {isForgetting && <div className='flex flex-row'>
+          
+          {/* Spinner */}
+          <div className="w-3 h-3 border-2 border-t-2 border-t-white border-gray-300 rounded-full animate-spin"></div>
+          {/* Loading Text */}
+          <span className="text-sm font-medium text-white">Please wait...</span>
+          </div>}
+
         </p>
         <p className="my-4 text-left">
-  If you are not registered member 
+      If you are not registered member 
           <Link
             to="sign-up"
            
@@ -173,13 +189,9 @@ const SignInForm = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
             <p className="text-lg mb-4">Do you want to reset your password?</p>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={() => confirmForgotPassword(true)}
-                className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300"
-              >
-                Yes
-              </button>
+            <div className=" justify-center gap-4 grid grid-cols-2">
+              <CustomLoadingButton action={() => confirmForgotPassword(true)} loadingText='Please Wait' isLoading={isForgetting} buttonText='Yes'/>
+              
               <button
                 onClick={() => confirmForgotPassword(false)}
                 className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition duration-300"
@@ -192,15 +204,14 @@ const SignInForm = () => {
       )}
 
       {/* Forgot Password Popup */}
-      {showForgotPopup && (
+      {!isForgetting && showForgotPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
-            <p className="text-lg mb-4">
-              A new password has been sent to your registered phone number or email.
-            </p>
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center gap-2">
+           
+            {errors.forget ? <p className="text-red-500 text-sm">{errors.forget}</p>: <p className="text-green-500 text-sm  font-bold">{success}</p>}
             <button
               onClick={() => setShowForgotPopup(false)}
-              className="bg-[#F84D43] text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
+              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
             >
               OK
             </button>

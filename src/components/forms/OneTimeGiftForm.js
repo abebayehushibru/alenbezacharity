@@ -96,7 +96,7 @@ const {showToast}=useToast()
     if (validateForm()) {
       setLoading(true);
       try {
-        const response = await axios.post(`${ABC_BACKEND_API_URL}/donations/gifts`, formData);
+        const response = await axios.post(`${ABC_BACKEND_API_URL}/donations/gifts`, formData,);
 
         if (formData.typeofGift === "money") {
           setPaymentLink(response.data.paymentLink); 

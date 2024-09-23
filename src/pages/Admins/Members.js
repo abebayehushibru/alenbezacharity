@@ -57,9 +57,11 @@ const Members = ({ params }) => {
   const handleRemoveRole = async (id) => {
     try {
       setLoading(true);
-      // Perform the deletion using axios
-      await axios.post(`${ABC_BACKEND_API_URL}/admin/updateRole`, { customId: selectedMemberId ,role:"banned"});
-      // Update state after deletion
+      await axios.post(`${ABC_BACKEND_API_URL}/admin/updateRole`, { customId: selectedMemberId ,role:"banned",},{ headers: {
+        'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+        'Content-Type': 'application/json',
+        // Add any other headers you need
+      }});
       setData(data.filter((dt) => dt.id !== id));
       setShowConfirmPopup(false); // Hide popup after successful deletion
       showToast("Admin role removed successfully.","success")

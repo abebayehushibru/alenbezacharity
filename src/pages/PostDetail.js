@@ -94,7 +94,11 @@ const PostDetail = () => {
         ABC_BACKEND_API_URL + "/posts/comment",
         newComment,
         {
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            'Authorization': 'Bearer '+user?.token, // Replace <your_token> with your actual token
+            'Content-Type': 'application/json',
+            // Add any other headers you need
+          }
         }
       );
       setComments((prev) => [...prev, response.data]);

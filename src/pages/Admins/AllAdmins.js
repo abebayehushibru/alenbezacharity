@@ -46,7 +46,13 @@ const AllAdmins = ({ params }) => {
    const handleRemoveRole = async (id) => {
     try {
       // Perform the deletion using axios
-      await axios.post(`${ABC_BACKEND_API_URL}/admin/updateRole`, { customId: selectedMemberId ,role:"member"});
+      await axios.post(`${ABC_BACKEND_API_URL}/admin/updateRole`, { customId: selectedMemberId ,role:"member"},{
+        headers: {
+          'Authorization': 'Bearer ' +user?.token, 
+          'Content-Type': 'application/json',
+          
+        }
+      });
       // Update state after deletion
       setData(data.filter((dt) => dt.id !== id));
       setShowConfirmPopup(false); // Hide popup after successful deletion

@@ -3,10 +3,11 @@ import axios from "axios";
 import { ABC_BACKEND_API_URL } from "../../configf/config";
 import CustomLoadingButton from "../controls/CustomButton";
 import { useToast } from "../../context/ToastContext";
+import { useAuth } from "../../context/AuthContext";
 
 const AddAdmin = ({ id, firstname, lastname, phoneNumber }) => {
   const { showToast } = useToast();
-
+  const { user } = useAuth();
   // State for form data
   const [formData, setFormData] = useState({
     id: id || "",
@@ -38,7 +39,8 @@ const AddAdmin = ({ id, firstname, lastname, phoneNumber }) => {
 
     try {
    //   showPopup("loading");
-      const response = await axios.post(`${ABC_BACKEND_API_URL}/users/findUserById`,   { customId: formData.id.toUpperCase() });
+      const response = await axios.post(`${ABC_BACKEND_API_URL}/users/findUserById`, 
+          { customId: formData.id.toUpperCase() });
       const { firstname, lastname, phonenumber } = response.data.user;
 
 
@@ -55,8 +57,7 @@ const AddAdmin = ({ id, firstname, lastname, phoneNumber }) => {
     } catch (error) {
       setErrors({ serverError: error.response?.data?.message || "Failed to fetch admin details." });
       console.log(error);
-      
-      //hidePopup();
+  
     }
   };
 
@@ -78,7 +79,13 @@ const AddAdmin = ({ id, firstname, lastname, phoneNumber }) => {
 
     try {
       setIsLoading(true)
-      await axios.post(`${ABC_BACKEND_API_URL}/admin/updateRole`, { customId: formData.id.toUpperCase() ,role:formData.adminRole});
+      await axios.post(`${ABC_BACKEND_API_URL}/admin/updateRole`, { customId: formData.id.toUpperCase() ,role:formData.adminRole},{
+        headers: {
+          'Authorization': 'Bearer ' +user?.token, 
+          'Content-Type': 'application/json',
+          // Add more headers as needed
+        }
+      });
       showToast("Role updated successfully!","success");
       setShowAdminDetails(false)
       setFormData({
