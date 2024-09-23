@@ -14,9 +14,17 @@ async function createTransaction(transactionData) {
       throw error;
     }
   }
-
+// Function to generate random 8-character password
+const generateRandomPassword=()=> {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let password = '';
+  for (let i = 0; i < 8; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
 
  
   
 
-export {createTransaction}
+export {createTransaction,generateRandomPassword}

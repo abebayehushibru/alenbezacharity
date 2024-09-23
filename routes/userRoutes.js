@@ -4,6 +4,7 @@ import {
   changePassword,
   createUser,
   findUserByCustomId,
+  forgetPassword,
   getAllUsers,
   getMemeberById,
   getProfile,
@@ -30,4 +31,5 @@ userRoutes.get("/profile", authMiddleware, getProfile);
 userRoutes.post("/profile", authMiddleware, updateProfile);
 userRoutes.post("/sendMail", sendContactEmail);
 userRoutes.post("/changePassword",authMiddleware, changePassword);
+userRoutes.post("/forgetPassword", forgetPassword);
 export default userRoutes;

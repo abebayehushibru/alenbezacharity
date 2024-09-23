@@ -7,7 +7,7 @@ import { createComment, createPost, deleteComment, deletePost, getAllPosts, getP
 
 const postRoutes = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
-postRoutes.get('posts/',authMiddleware,roleMiddleware(["Content-manager","superadmin"]), getAllPosts);
+postRoutes.get('/',authMiddleware,roleMiddleware(["Content-manager","superadmin"]), getAllPosts);
 postRoutes.get('/bypage',  getPosts);
 postRoutes.get('/:id', getPostById)
 postRoutes.post('/add',authMiddleware,roleMiddleware(["Content-manager","superadmin"]), upload.array('images'), createPost);

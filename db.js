@@ -1,13 +1,25 @@
 // db.js
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import Gifts from './models/Gift.js';
+import MonthlyPaymentHistory from './models/MonthlPaymentHistory.js';
+import Transaction from './models/Transaction.js';
 
 dotenv.config();
 
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-   
+    await Gifts.deleteMany({});
+    console.log('All data from Gifts collection has been deleted.');
+
+    // Delete all data from MonthlyPaymentHistory collection
+    await MonthlyPaymentHistory.deleteMany({});
+    console.log('All data from MonthlyPaymentHistory collection has been deleted.');
+
+    // Delete all data from Transaction collection
+    await Transaction.deleteMany({});
+    console.log('All data from Transaction collection has been deleted.');
   console.log('MongoDB connected successfully');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);

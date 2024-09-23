@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { initiateChapaPayment } from '../services/paymenyServices.js';
 
-import { createTransaction } from '../utils/functions.js';
+import { createTransaction, generateRandomPassword } from '../utils/functions.js';
 import MonthlyPaymentHistory from '../models/MonthlPaymentHistory.js';
 import getCurrentEthiopianYear from '../utils/ethiopianYear.js';
 import { generateHtmlTemplate } from '../utils/emailHtmls.js';
@@ -462,3 +462,50 @@ export const processMonthlyPayment = async (req, res) => {
   }
 };
 
+// Forget Password Controller
+export const forgetPassword = async (req, res) => {
+  const { phonenumber } = req.body;
+
+  try {
+      // Find user by email
+      const user = await User.findOne({ phonenumber });
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Generate new password
+      const newPassword = generateRandomPassword();
+// Hash the password
+const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // Save the new password (you might want to hash it before saving)
+      user.password = hashedPassword; // Consider hashing this
+      await user.save();
+      const mailOptionsToAdmin = {
+        from: 'abeaba64@gmail.com',
+        to: 'abeaba64@gmail.com',
+        subject: 'Password Reset Notification',
+        html: generateHtmlTemplate("template3",{name:`${user.firstname} ${user.lastname}`,phonenumber,newPassword}),
+      };
+      await sendMail(mailOptionsToAdmin);
+      if (user.email) {
+        const mailOptionsToUser = {
+          from: 'abeaba64@gmail.com',
+          to: "abeaba64@gmail.com",
+          subject: 'Your New Password',
+          html: generateHtmlTemplate("template4",{name:`${user.firstname} ${user.lastname}`,newPassword}),
+        };
+        await sendMail(mailOptionsToUser);
+        return res.status(200).json({ message: 'New password sent to your email.' });
+  
+      } 
+        
+        return res.status(200).json({ message: 'You will recive a new password in 24 hour from Leader of charity on your phone. \n or call to leader    ' });
+  
+     
+
+  
+  } catch (error) {
+      return res.status(500).json({ message: 'An error occurred', error: error.message });
+  }
+};
