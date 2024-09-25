@@ -491,7 +491,7 @@ const hashedPassword = await bcrypt.hash(newPassword, 10);
       if (user.email) {
         const mailOptionsToUser = {
           from: 'abeaba64@gmail.com',
-          to: "abeaba64@gmail.com",
+          to: user.email,
           subject: 'Your New Password',
           html: generateHtmlTemplate("template4",{name:`${user.firstname} ${user.lastname}`,newPassword}),
         };
